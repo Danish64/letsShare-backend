@@ -10,14 +10,29 @@ exports.registerUser = async (req, res) => {
   let user = await User.findOne({ email: req.body.email });
   if (user) res.status(400).send("User already exist !");
 
-  user = new User(_.pick(req.body, ["name", "email", "password"]));
+  user = new User(
+    _.pick(req.body, [
+      "name",
+      "email",
+      "password",
+      "phone",
+      "city",
+      "avatar",
+      "gender",
+      "homeAddress",
+      "workAddress",
+      "sharedAssets",
+      "availedAssets",
+      "reviews",
+    ])
+  );
   const salt = await bcrypt.genSalt(10);
   user.password = await bcrypt.hash(user.password, salt);
   await user.save();
 
   //   const token = user.generateAuthToken();
 
-  res.status(200).send(_.pick(user, ["name", "email", "_id"]));
+  res.status(200).send(_.omit(user, ["password"]));
 };
 
 exports.getUser = async (req, res) => {
