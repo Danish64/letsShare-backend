@@ -1,4 +1,6 @@
 # Lets Share Backend
 
-**Technology Stack
+**Technology Stack**
  *Node.js, Express.js, MongoDb, Postman. 
+ 
+**Architecture**
