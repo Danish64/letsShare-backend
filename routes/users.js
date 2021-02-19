@@ -1,22 +1,17 @@
 // const auth = require("../middleware/auth");
 // const admin = require("../middleware/admin");
 
+const { get } = require("config");
 const express = require("express");
 const router = express.Router();
-const { registerUser, getUser } = require("../controllers/users");
+const {
+  registerUser,
+  getUser,
+  getUserWithEmail,
+} = require("../controllers/users");
+const auth = require("../middleware/auth");
 
-router.get("/me", async (req, res) => {
-  // try {
-  //   // debug("User Id ->", req.user._id);
-  //   const user = await User.findById(req.user._id).select("-password");
-  //   res.send(user);
-  // } catch (ex) {
-  //   debug(ex);
-  //   res.status(500).send("Server error");
-  // }
-});
-
-router.route("/").post(registerUser);
+router.route("/").get(getUserWithEmail, auth).post(registerUser);
 router.route("/:id").get(getUser);
 
 module.exports = router;
