@@ -14,7 +14,7 @@ router.post("/", async (req, res) => {
   try {
     user = await User.findOne({ email: req.body.email });
     // debug("user object from db", user);
-    if (!user) res.status(400).send("Invalid email or password !");
+    if (!user) return res.status(400).send("Invalid email or password !");
   } catch (er) {
     debug(er);
   }
@@ -24,12 +24,13 @@ router.post("/", async (req, res) => {
       req.body.password,
       user.password
     );
-    if (!validPassword) res.status(400).send("Invalid email or password !");
+    if (!validPassword)
+      return res.status(400).send("Invalid email or password !");
   } catch (er) {
     debug("In validating password block", er);
   }
   const token = user.generateAuthToken();
-  res.send(token);
+  res.status(200).header("x-auth-token", token).send(user);
 });
 
 function validate(req) {

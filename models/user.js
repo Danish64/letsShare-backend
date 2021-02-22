@@ -96,30 +96,75 @@ function validateUser(user) {
     password: Joi.string().min(5).max(255).required(),
     phone: Joi.string().min(11).max(13).required(),
     city: Joi.string().min(3).max(124).required(),
+    avatar: Joi.binary(),
     gender: Joi.string().valid("male", "female").required(),
+    homeAddress: Joi.object({
+      house: Joi.string().required(),
+      street: Joi.string().required(),
+      province: Joi.string().required(),
+    }).required(),
+    workAddress: Joi.object({
+      house: Joi.string().required(),
+      street: Joi.string().required(),
+      province: Joi.string().required(),
+    }).required(),
+    sharedAssets: Joi.object({
+      sharedSpaces: Joi.array().items(
+        Joi.object({
+          spaceName: Joi.string(),
+        })
+      ),
+      sharedRides: Joi.array().items(
+        Joi.object({
+          rideName: Joi.string(),
+        })
+      ),
+      sharedFoods: Joi.array().items(
+        Joi.object({
+          foodName: Joi.string(),
+        })
+      ),
+      sharedGoods: Joi.array().items(
+        Joi.object({
+          goodName: Joi.string(),
+        })
+      ),
+    }),
+    availedAssets: Joi.object({
+      availedSpaces: Joi.array().items(
+        Joi.object({
+          spaceName: Joi.string(),
+        })
+      ),
+      availedRides: Joi.array().items(
+        Joi.object({
+          rideName: Joi.string(),
+        })
+      ),
+      availedFoods: Joi.array().items(
+        Joi.object({
+          foodName: Joi.string(),
+        })
+      ),
+      availedGoods: Joi.array().items(
+        Joi.object({
+          goodName: Joi.string(),
+        })
+      ),
+    }),
+    reviews: Joi.array().items(Joi.object({ review: Joi.string() })),
   });
 
   return schema.validate(user);
 }
 
-function validateEmailPassword(user) {
-  const schema = Joi.object({
-    email: Joi.string().min(5).max(255).required().email(),
-    password: Joi.string().min(5).max(255).required(),
-  });
-
-  return schema.validate(user);
-}
-
-function validateEmail(email) {
+function validateEmail(req) {
   const schema = Joi.object({
     email: Joi.string().min(5).max(255).required().email(),
   });
 
-  return schema.validate(email);
+  return schema.validate(req);
 }
-
 exports.User = User;
 exports.validate = validateUser;
 exports.validateEmail = validateEmail;
-exports.validateEmailPassword = validateEmailPassword;

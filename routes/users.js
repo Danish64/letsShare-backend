@@ -1,17 +1,17 @@
-// const auth = require("../middleware/auth");
+const auth = require("../middleware/auth");
 // const admin = require("../middleware/admin");
-
-const { get } = require("config");
 const express = require("express");
 const router = express.Router();
 const {
   registerUser,
   getUser,
   getUserWithEmail,
+  getLoggedInUser,
 } = require("../controllers/users");
-const auth = require("../middleware/auth");
 
-router.route("/").get(getUserWithEmail, auth).post(registerUser);
+router.route("/registerUser").post(registerUser);
+router.route("/checkEmail").get(getUserWithEmail);
+router.route("/loggedInUser").get(auth, getLoggedInUser);
 router.route("/:id").get(getUser);
 
 module.exports = router;

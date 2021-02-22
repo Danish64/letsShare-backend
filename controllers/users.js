@@ -1,23 +1,31 @@
 const bcrypt = require("bcrypt");
+
 const _ = require("lodash");
 const { User, validate, validateEmail } = require("../models/user");
 const debug = require("debug")("app:db");
 
 exports.registerUser = async (req, res) => {
-  const { error } = validate(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
+  // console.log("registerUser Route Called");
+  try {
+    // const { error } = validate(req.body);
+    // if (error) return res.status(400).send(error.details[0].message);
 
-  let user = await User.findOne({ email: req.body.email });
-  if (user) res.status(400).send("User already exist !");
+    let user = await User.findOne({ email: req.body.email });
+    if (user) return res.status(400).send("User already exist !");
 
-  user = new User(_.omit(req.body, ["password"]));
-  const salt = await bcrypt.genSalt(10);
-  user.password = await bcrypt.hash(user.password, salt);
-  await user.save();
+    user = new User(req.body);
 
-  const token = user.generateAuthToken();
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(user.password, salt);
 
-  res.status(200).header("x-auth-token", token).send(user);
+    await user.save();
+
+    const token = user.generateAuthToken();
+
+    res.status(200).header("x-auth-token", token).send(user);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
 };
 
 // exports.getUsers = async (req, res, next) => {
@@ -26,11 +34,20 @@ exports.registerUser = async (req, res) => {
 // };
 
 exports.getUser = async (req, res) => {
+  // console.log("Get User Called");
   let user = await User.findById(req.params.id).lean();
   if (!user) {
     return res.status(404).send("Wrong User Id");
   }
-  res.status(200).send(_.omit(user, ["password"]));
+  res.status(200).send(user);
+};
+
+exports.getLoggedInUser = async (req, res) => {
+  let user = await User.findById(req.user._id).lean();
+  if (!user) {
+    return res.status(404).send("Wrong User Id");
+  }
+  res.status(200).send(user);
 };
 
 exports.getUserWithEmail = async (req, res) => {
@@ -39,9 +56,22 @@ exports.getUserWithEmail = async (req, res) => {
 
   let user = await User.findOne({ email: req.body.email });
   if (!user) {
-    return res.status(404).send("No user exist with this email.");
+    return res.status(404).send(false);
+  } else {
+    return res.status(200).send(true);
   }
+};
 
-  const token = user.generateAuthToken();
-  res.status(200).header("x-auth-token", token).send(user);
+exports.updateUserEmail = async (req, res) => {
+  const { error } = validateEmail(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
+
+  let user = await User.findOne({ email: req.body.email });
+  if (user) return res.status(400).send("User already exist !");
+
+  if (!user) {
+    return res.status(404).send(false);
+  } else {
+    return res.status(200).send(true);
+  }
 };
