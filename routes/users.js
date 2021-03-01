@@ -10,7 +10,7 @@ const {
 } = require("../controllers/users");
 
 router.route("/registerUser").post(registerUser);
-router.route("/checkEmail").get(getUserWithEmail);
+router.route("/checkEmail").post(getUserWithEmail);
 router.route("/loggedInUser").get(auth, getLoggedInUser);
 router.route("/:id").get(getUser);
 
