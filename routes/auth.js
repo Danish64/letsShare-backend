@@ -9,9 +9,9 @@ const debug = require("debug")("app:db");
 router.post("/", async (req, res) => {
   const { error } = validate(req.body);
   if (error)
-    return res.status(400).send({
+    return res.status(200).send({
       status: "success",
-      data: null,
+      errorCode: 400,
       message: error.details[0].message,
     });
 
@@ -20,9 +20,9 @@ router.post("/", async (req, res) => {
     user = await User.findOne({ email: req.body.email });
     // debug("user object from db", user);
     if (!user)
-      return res.status(400).send({
+      return res.status(200).send({
         status: "success",
-        data: null,
+        errorCode: 404,
         message: "Invalid email or password !",
       });
   } catch (er) {
@@ -35,13 +35,11 @@ router.post("/", async (req, res) => {
       user.password
     );
     if (!validPassword)
-      return res
-        .status(400)
-        .send({
-          status: "success",
-          data: null,
-          message: "Invalid email or password !",
-        });
+      return res.status(200).send({
+        status: "success",
+        errorCode: 404,
+        message: "Invalid email or password !",
+      });
   } catch (er) {
     debug("In validating password block", er);
   }
