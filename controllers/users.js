@@ -38,10 +38,16 @@ exports.registerUser = async (req, res) => {
   }
 };
 
-// exports.getUsers = async (req, res, next) => {
-//   let users = await User.find().sort("name");
-//   res.send(users);
-// };
+exports.getUsers = async (req, res, next) => {
+  // console.log("Get all users called ");
+  try {
+    let users = await User.find({}).sort("name");
+    // console.log(users);
+    res.send({ status: "success", data: users, message: null });
+  } catch (err) {
+    console.log("Error in get all users", err);
+  }
+};
 
 exports.getUser = async (req, res) => {
   // console.log("Get User Called");

@@ -15,6 +15,11 @@ const BookingSchema = new mongoose.Schema({
     type: String,
   },
 
+  availerSeats: {
+    type: Number,
+    default: 1,
+  },
+
   availerMessage: {
     type: String,
   },
