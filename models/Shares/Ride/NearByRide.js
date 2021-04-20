@@ -33,6 +33,11 @@ const BookingSchema = new mongoose.Schema({
     latitude: { type: String },
     longitude: { type: String },
   },
+
+  isAccepted: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const nearByRideShareSchema = new mongoose.Schema({

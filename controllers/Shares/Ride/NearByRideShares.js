@@ -42,6 +42,31 @@ exports.getUserNearByRideShares = async (req, res) => {
   }
 };
 
+exports.getAllNearByRideShares = async (req, res) => {
+  console.log("getNearByRideShares Route Called");
+  try {
+    let nearByRideShares = await NearByRideShare.find({
+      isAvailable: true,
+    });
+    if (!nearByRideShares)
+      return res.status(200).send({
+        status: "failure",
+        data: [],
+        message: "No available ride shares",
+      });
+
+    res.status(200).send({
+      status: "success",
+      data: nearByRideShares,
+      message: "All nearby ride shares",
+    });
+  } catch (err) {
+    res
+      .status(200)
+      .send({ status: "Error", errorCode: 500, message: err.message });
+  }
+};
+
 exports.createNearByBooking = async (req, res) => {
   console.log("createNearByRideShare Booking Route Called");
 
@@ -59,6 +84,15 @@ exports.createNearByBooking = async (req, res) => {
     // console.log("getting bookings", nearByRideShare.bookings);
 
     const newBooking = { ...req.body };
+
+    if (nearByRideShare.seatsAvailable < newBooking.availerSeats) {
+      return res.status(200).send({
+        status: "Error",
+        errorCode: 400,
+        message: `Not enough seats ! Only ${nearByRideShare.seatsAvailable} available`,
+      });
+    }
+
     const checkBooking = nearByRideShare.bookings.filter((booking) => {
       // console.log(booking.availerId.toString().trim());
       // console.log(newBooking.availerId);
@@ -88,6 +122,53 @@ exports.createNearByBooking = async (req, res) => {
       status: "success",
       data: nearByRideShare.bookings,
       message: "New booking created",
+    });
+  } catch (err) {
+    return res
+      .status(200)
+      .send({ status: "Error", errorCode: 500, message: err.message });
+  }
+};
+
+exports.acceptNearByBooking = async (req, res) => {
+  console.log("acceptNearByRideShare Booking Route Called");
+  let availerName = "";
+
+  try {
+    let nearByRideShare = await NearByRideShare.findById(req.body.shareId);
+
+    if (!nearByRideShare.isAvailable) {
+      return res.status(200).send({
+        status: "Error",
+        errorCode: 400,
+        message: "Booking capacity is full.",
+      });
+    }
+
+    let bookings = nearByRideShare.bookings;
+
+    for (let booking of bookings) {
+      if (booking["_id"].toString().trim() === req.body.bookingId.trim()) {
+        booking.isAccepted = true;
+        nearByRideShare.seatsAvailable =
+          nearByRideShare.seatsAvailable - booking.availerSeats;
+
+        availerName = booking.availerName;
+      }
+    }
+
+    if (nearByRideShare.seatsAvailable === 0) {
+      nearByRideShare.isAvailable = false;
+    }
+
+    // console.log("Updated Share", nearByRideShare.seatsAvailable);
+
+    nearByRideShare.save();
+
+    return res.status(200).send({
+      status: "success",
+      data: "",
+      message: `${availerName}'s booking accepted.`,
     });
   } catch (err) {
     return res
