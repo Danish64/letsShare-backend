@@ -5,11 +5,13 @@ const {
   getUserNearByRideShares,
   createNearByBooking,
   acceptNearByBooking,
+  getAllNearByRideShares,
 } = require("../../../controllers/Shares/Ride/NearByRideShares");
 
 router.route("/createNearByRideShare").post(createShare);
 router.route("/getUserNearByRideShares").get(getUserNearByRideShares);
-router.route("/createNearByRidesSharesBooking/:id").post(createNearByBooking);
 router.route("/acceptNearByRidesSharesBooking").put(acceptNearByBooking);
+router.route("/createNearByRidesSharesBooking/:id").post(createNearByBooking);
+router.route("/getAllNearByRides").get(getAllNearByRideShares);
 
 module.exports = router;
