@@ -40,7 +40,7 @@ const BookingSchema = new mongoose.Schema({
   },
 });
 
-const nearByRideShareSchema = new mongoose.Schema({
+const cityToCityRideShareSchema = new mongoose.Schema({
   sharerId: {
     type: mongoose.ObjectId,
     required: true,
@@ -75,7 +75,7 @@ const nearByRideShareSchema = new mongoose.Schema({
   rideCategory: {
     type: String,
     required: true,
-    default: "Nearby",
+    default: "CityToCity",
   },
   startLocation: {
     address: { type: String },
@@ -97,13 +97,14 @@ const nearByRideShareSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
-  // departureDate: {
-  //   type: Date,
-  //   required: true,
-  // },
+  departureDate: {
+    type: String,
+  },
   departureTime: {
     type: String,
-    required: false,
+  },
+  routeInfo: {
+    type: String,
   },
 
   bookings: [BookingSchema],
@@ -114,9 +115,9 @@ const nearByRideShareSchema = new mongoose.Schema({
   },
 });
 
-const NearByRideShare = mongoose.model(
-  "NearByRideShare",
-  nearByRideShareSchema
+const CityToCityRideShare = mongoose.model(
+  "CityToCityRideShare",
+  cityToCityRideShareSchema
 );
 
-exports.NearByRideShare = NearByRideShare;
+exports.CityToCityRideShare = CityToCityRideShare;
