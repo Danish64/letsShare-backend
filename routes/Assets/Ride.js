@@ -6,6 +6,6 @@ const {
 } = require("../../controllers/Assets/Ride");
 
 router.route("/createRide").post(createUserRide);
-router.route("/getUserRides").get(getUserRides);
+router.route("/getUserRides").post(getUserRides);
 
 module.exports = router;
