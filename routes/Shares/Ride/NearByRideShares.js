@@ -9,7 +9,7 @@ const {
 } = require("../../../controllers/Shares/Ride/NearByRideShares");
 
 router.route("/createNearByRideShare").post(createShare);
-router.route("/getUserNearByRideShares").get(getUserNearByRideShares);
+router.route("/getUserNearByRideShares").post(getUserNearByRideShares);
 router.route("/acceptNearByRidesSharesBooking").put(acceptNearByBooking);
 router.route("/createNearByRidesSharesBooking/:id").post(createNearByBooking);
 router.route("/getAllNearByRides").get(getAllNearByRideShares);

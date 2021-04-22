@@ -9,7 +9,7 @@ const {
 } = require("../../../controllers/Shares/Ride/CityToCityShares");
 
 router.route("/createCityToCityRideShare").post(createShare);
-router.route("/getUserCityToCityRideShares").get(getUserCityToCityRideShares);
+router.route("/getUserCityToCityRideShares").post(getUserCityToCityRideShares);
 router.route("/acceptCityToCityRideSharesBooking").put(acceptCityToCityBooking);
 router
   .route("/createCityToCityRideSharesBooking/:id")
