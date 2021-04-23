@@ -57,7 +57,7 @@ const nearByRideShareSchema = new mongoose.Schema({
   registrationNumber: {
     type: String,
     required: true,
-    minlength: 5,
+    minlength: 2,
     maxlength: 50,
   },
   rideType: {
@@ -120,3 +120,4 @@ const NearByRideShare = mongoose.model(
 );
 
 exports.NearByRideShare = NearByRideShare;
+exports.NearByRideShareSchema = nearByRideShareSchema;

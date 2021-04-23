@@ -1,9 +1,22 @@
 const { NearByRideShare } = require("../../../models/Shares/Ride/NearByRide");
-
+const { User } = require("../../../models/user");
 exports.createShare = async (req, res) => {
   console.log("createNearByRideShare Route Called");
   try {
-    nearByRideShare = new NearByRideShare(req.body);
+    let nearByRideShare = new NearByRideShare(req.body);
+
+    let user = await User.findById(req.body.sharerId);
+
+    if (!user) {
+      return res
+        .status(200)
+        .send({ status: "error", errorCode: 400, message: "Wrong user id" });
+    }
+
+    user.sharedAssets.sharedRides.push(nearByRideShare);
+
+    await user.save();
+
     await nearByRideShare.save();
 
     res.status(200).send({
@@ -161,7 +174,17 @@ exports.acceptNearByBooking = async (req, res) => {
       nearByRideShare.isAvailable = false;
     }
 
-    // console.log("Updated Share", nearByRideShare.seatsAvailable);
+    let user = await User.findById(req.body.availerId);
+
+    if (!user) {
+      return res
+        .status(200)
+        .send({ status: "error", errorCode: 400, message: "Wrong availer id" });
+    }
+
+    user.availedAssets.availedRides.push(nearByRideShare);
+
+    await user.save();
 
     nearByRideShare.save();
 

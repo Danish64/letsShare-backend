@@ -5,7 +5,18 @@ const {
 exports.createShare = async (req, res) => {
   console.log("createCityToCityShare Route Called");
   try {
-    cityToCityRideShare = new CityToCityRideShare(req.body);
+    let cityToCityRideShare = new CityToCityRideShare(req.body);
+
+    let user = await User.findById(req.body.sharerId);
+
+    if (!user) {
+      return res
+        .status(200)
+        .send({ status: "error", errorCode: 400, message: "Wrong user id" });
+    }
+
+    user.sharedAssets.sharedRides.push(cityToCityRideShare);
+
     await cityToCityRideShare.save();
 
     res.status(200).send({
@@ -164,6 +175,18 @@ exports.acceptCityToCityBooking = async (req, res) => {
     }
 
     // console.log("Updated Share", cityToCityRideShare.seatsAvailable);
+
+    let user = await User.findById(req.body.availerId);
+
+    if (!user) {
+      return res
+        .status(200)
+        .send({ status: "error", errorCode: 400, message: "Wrong availer id" });
+    }
+
+    user.availedAssets.availedRides.push(cityToCityRideShare);
+
+    await user.save();
 
     cityToCityRideShare.save();
 

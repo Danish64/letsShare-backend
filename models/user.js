@@ -3,6 +3,8 @@ const jwt = require("jsonwebtoken");
 const Joi = require("joi");
 const mongoose = require("mongoose");
 
+const { NearByRideShareSchema } = require("./Shares/Ride/NearByRide");
+
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -114,11 +116,7 @@ function validateUser(user) {
           spaceName: Joi.string(),
         })
       ),
-      sharedRides: Joi.array().items(
-        Joi.object({
-          rideName: Joi.string(),
-        })
-      ),
+      sharedRides: [NearByRideShareSchema],
       sharedFoods: Joi.array().items(
         Joi.object({
           foodName: Joi.string(),
@@ -130,17 +128,9 @@ function validateUser(user) {
         })
       ),
     }),
-    availedAssets: Joi.object({
-      availedSpaces: Joi.array().items(
-        Joi.object({
-          spaceName: Joi.string(),
-        })
-      ),
-      availedRides: Joi.array().items(
-        Joi.object({
-          rideName: Joi.string(),
-        })
-      ),
+    availedAssets: {
+      availedSpaces: [{ spaceName: String }],
+      availedRides: [NearByRideShareSchema],
       availedFoods: Joi.array().items(
         Joi.object({
           foodName: Joi.string(),
@@ -151,7 +141,7 @@ function validateUser(user) {
           goodName: Joi.string(),
         })
       ),
-    }),
+    },
     reviews: Joi.array().items(Joi.object({ review: Joi.string() })),
   });
 
