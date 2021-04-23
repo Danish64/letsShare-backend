@@ -11,7 +11,7 @@ const tourRideShares = require("../routes/Shares/Ride/TourRideShares");
 //Goods Routes
 
 const userGoods = require("../routes/Assets/Good");
-
+const goodShares = require("../routes/Shares/Good");
 //Foods Routes
 
 const userFoods = require("../routes/Assets/Food");
@@ -25,5 +25,6 @@ module.exports = function (app) {
   app.use("/api/v1/cityToCityRideShares", cityToCityRideShares);
   app.use("/api/v1/tourRideShares", tourRideShares);
   app.use("/api/v1/userGoods", userGoods);
+  app.use("/api/v1/goodShares", goodShares);
   app.use("/api/v1/userFoods", userFoods);
 };

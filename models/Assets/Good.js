@@ -5,6 +5,12 @@ const userGoodSchema = new mongoose.Schema({
     type: mongoose.ObjectId,
     required: true,
   },
+  ownerContactNumber: {
+    type: String,
+    required: true,
+    minlength: 5,
+    maxlength: 50,
+  },
   title: {
     type: String,
     required: true,
