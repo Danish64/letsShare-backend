@@ -3,7 +3,7 @@ const { UserRideSchema } = require("../../models/Assets/Ride");
 exports.createUserRide = async (req, res) => {
   console.log("createUserRide Route Called");
   try {
-    userRide = new UserRideSchema(req.body);
+    let userRide = new UserRideSchema(req.body);
     await userRide.save();
 
     res.status(200).send({
