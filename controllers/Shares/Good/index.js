@@ -60,6 +60,7 @@ exports.getAllGoodShares = async (req, res) => {
   try {
     let goodShares = await GoodShare.find({
       isAvailable: true,
+      sharerId: { $ne: req.body.userId },
     });
     if (!goodShares)
       return res.status(200).send({

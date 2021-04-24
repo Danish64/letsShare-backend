@@ -14,6 +14,6 @@ router.route("/acceptTourRideSharesBooking").put(acceptTourRideShareBooking);
 router
   .route("/createTourRideSharesBooking/:id")
   .post(createTourRideShareBooking);
-router.route("/getAllTourRides").get(getAllTourRideShares);
+router.route("/getAllTourRides").post(getAllTourRideShares);
 
 module.exports = router;

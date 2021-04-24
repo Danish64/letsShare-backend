@@ -60,6 +60,7 @@ exports.getAllCityToCityRideShares = async (req, res) => {
   try {
     let cityToCityRideShares = await CityToCityRideShare.find({
       isAvailable: true,
+      sharerId: { $ne: req.body.userId },
     });
     if (!cityToCityRideShares)
       return res.status(200).send({

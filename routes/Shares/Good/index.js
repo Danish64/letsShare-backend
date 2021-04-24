@@ -12,6 +12,6 @@ router.route("/createGoodShare").post(createShare);
 router.route("/getUserGoodShares").post(getUserGoodShares);
 router.route("/acceptGoodShareBooking").put(acceptGoodShareBooking);
 router.route("/createGoodShareBooking/:id").post(createGoodShareBooking);
-router.route("/getAllGoodShares").get(getAllGoodShares);
+router.route("/getAllGoodShares").post(getAllGoodShares);
 
 module.exports = router;

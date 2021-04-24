@@ -58,6 +58,7 @@ exports.getAllTourRideShares = async (req, res) => {
   try {
     let tourRideShares = await TourRideShare.find({
       isAvailable: true,
+      sharerId: { $ne: req.body.userId },
     });
     if (!tourRideShares)
       return res.status(200).send({

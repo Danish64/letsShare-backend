@@ -60,6 +60,7 @@ exports.getAllNearByRideShares = async (req, res) => {
   try {
     let nearByRideShares = await NearByRideShare.find({
       isAvailable: true,
+      sharerId: { $ne: req.body.userId },
     });
     if (!nearByRideShares)
       return res.status(200).send({
