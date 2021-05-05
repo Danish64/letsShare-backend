@@ -1,6 +1,7 @@
 const {
   CityToCityRideShare,
 } = require("../../../models/Shares/Ride/CityToCity");
+const { User } = require("../../../models/user");
 
 exports.createShare = async (req, res) => {
   console.log("createCityToCityShare Route Called");
@@ -27,7 +28,7 @@ exports.createShare = async (req, res) => {
   } catch (err) {
     res
       .status(200)
-      .send({ status: "success", errorCode: 500, message: err.message });
+      .send({ status: "error", errorCode: 500, message: err.message });
   }
 };
 exports.getUserCityToCityRideShares = async (req, res) => {

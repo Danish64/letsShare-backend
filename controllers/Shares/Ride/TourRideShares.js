@@ -1,4 +1,5 @@
 const { TourRideShare } = require("../../../models/Shares/Ride/TourRide");
+const { User } = require("../../../models/user");
 
 exports.createShare = async (req, res) => {
   console.log("createTourRideShare Route Called");

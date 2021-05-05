@@ -8,10 +8,16 @@ const {
   getAllNearByRideShares,
 } = require("../../../controllers/Shares/Ride/NearByRideShares");
 
-router.route("/createNearByRideShare").post(createShare);
-router.route("/getUserNearByRideShares").post(getUserNearByRideShares);
-router.route("/acceptNearByRidesSharesBooking").put(acceptNearByBooking);
-router.route("/createNearByRidesSharesBooking/:id").post(createNearByBooking);
-router.route("/getAllNearByRides").post(getAllNearByRideShares);
+module.exports = function (io, socketId) {
+  router.route("/createNearByRideShare").post(createShare(io));
+  router.route("/getUserNearByRideShares").post(getUserNearByRideShares);
+  router
+    .route("/acceptNearByRidesSharesBooking")
+    .put(acceptNearByBooking(io, socketId));
+  router
+    .route("/createNearByRidesSharesBooking/:id")
+    .post(createNearByBooking(io, socketId));
+  router.route("/getAllNearByRides").post(getAllNearByRideShares);
 
-module.exports = router;
+  return router;
+};
