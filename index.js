@@ -14,7 +14,6 @@ var socketId;
 const onConnection = (socket) => {
   socketId = socket.id;
   console.log("User Connected to letsshare server", socketId);
-  require("./startup/routes")(app, io, socketId);
 
   // registerNearByRidesHandlers(io, socket);
 
@@ -36,6 +35,7 @@ const onConnection = (socket) => {
 
 io.on("connection", onConnection);
 
+require("./startup/routes")(app, io, socketId);
 require("./startup/db")();
 require("./startup/prod")(app);
 
