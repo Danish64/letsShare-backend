@@ -7,6 +7,7 @@ const userRides = require("../routes/Assets/Ride");
 const nearByRideShares = require("../routes/Shares/Ride/NearByRideShares");
 const cityToCityRideShares = require("../routes/Shares/Ride/CityToCityRideShares");
 const tourRideShares = require("../routes/Shares/Ride/TourRideShares");
+const allRidesShares = require("../routes/Shares/Ride/AllRides");
 
 //Goods Routes
 
@@ -25,6 +26,7 @@ module.exports = function (app, io, socketId) {
   app.use("/api/v1/nearByRideShares", nearByRideShares(io, socketId));
   app.use("/api/v1/cityToCityRideShares", cityToCityRideShares);
   app.use("/api/v1/tourRideShares", tourRideShares);
+  app.use("/api/v1/userRideShares", allRidesShares);
   app.use("/api/v1/userGoods", userGoods);
   app.use("/api/v1/goodShares", goodShares);
   app.use("/api/v1/userFoods", userFoods);
