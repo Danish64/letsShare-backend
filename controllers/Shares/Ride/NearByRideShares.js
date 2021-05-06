@@ -89,7 +89,7 @@ exports.getAllNearByRideShares = async (req, res) => {
 };
 
 exports.createNearByBooking = function (io, socketId) {
-  // console.log("SocketId in createNearByBooking", socketId);
+  console.log("SocketId in createNearByBooking", socketId);
   return async (req, res) => {
     console.log("createNearByRideShare Booking Route Called");
 
@@ -141,8 +141,10 @@ exports.createNearByBooking = function (io, socketId) {
 
       nearByRideShare.save();
 
-      //emit event on share id to listen for the created booking
-      io.to(socketId).emit("nearByRides:newShareBooking", nearByRideShare);
+      if (socketId) {
+        //emit event on socket id to listen for the created booking
+        io.to(socketId).emit("nearByRides:newShareBooking", nearByRideShare);
+      }
 
       return res.status(200).send({
         status: "success",
@@ -207,14 +209,16 @@ exports.acceptNearByBooking = function (io, socketId) {
 
       nearByRideShare.save();
 
-      io.to(socketId).emit(
-        "nearByRides:bookingAcceptedAvailer",
-        nearByRideShare
-      );
-      io.to(socketId).emit(
-        "nearByRides:bookingAcceptedSharer",
-        acceptedBooking
-      );
+      if (socketId) {
+        io.to(socketId).emit(
+          "nearByRides:bookingAcceptedAvailer",
+          nearByRideShare
+        );
+        io.to(socketId).emit(
+          "nearByRides:bookingAcceptedSharer",
+          acceptedBooking
+        );
+      }
 
       return res.status(200).send({
         status: "success",
