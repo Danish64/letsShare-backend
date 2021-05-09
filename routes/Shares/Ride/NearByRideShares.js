@@ -1,4 +1,5 @@
 const express = require("express");
+const { isObject } = require("underscore");
 const router = express.Router();
 const {
   createShare,
@@ -8,15 +9,13 @@ const {
   getAllNearByRideShares,
 } = require("../../../controllers/Shares/Ride/NearByRideShares");
 
-module.exports = function (io, socketId) {
+module.exports = function (io) {
   router.route("/createNearByRideShare").post(createShare(io));
   router.route("/getUserNearByRideShares").post(getUserNearByRideShares);
-  router
-    .route("/acceptNearByRidesSharesBooking")
-    .put(acceptNearByBooking(io, socketId));
+  router.route("/acceptNearByRidesSharesBooking").put(acceptNearByBooking(io));
   router
     .route("/createNearByRidesSharesBooking/:id")
-    .post(createNearByBooking(io, socketId));
+    .post(createNearByBooking(io));
   router.route("/getAllNearByRides").post(getAllNearByRideShares);
 
   return router;

@@ -10,22 +10,10 @@ const options = {
 };
 const io = require("socket.io")(httpServer, options);
 //Sockets
-var socketId;
+global.socketId = "";
 const onConnection = (socket) => {
   socketId = socket.id;
   console.log("User Connected to letsshare server", socketId);
-  // require("./startup/routes")(app, io, socketId);
-
-  // registerNearByRidesHandlers(io, socket);
-
-  // socket.on("testing", (payload) => {
-  //   // console.log("Testing data from client", payload);
-  //   io.to(socketId).emit("testingResponse", {
-  //     ...payload,
-  //     server: true,
-  //     userSocketId: socketId,
-  //   });
-  // });
 
   socket.on("disconnect", () => {
     console.log("user disconnected");
@@ -35,9 +23,7 @@ const onConnection = (socket) => {
 };
 
 io.on("connection", onConnection);
-if (!socketId) {
-  require("./startup/routes")(app, io, socketId);
-}
+require("./startup/routes")(app, io);
 require("./startup/db")();
 require("./startup/prod")(app);
 

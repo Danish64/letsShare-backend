@@ -6,6 +6,7 @@ const { TourRideShare } = require("../../../models/Shares/Ride/TourRide");
 
 exports.getUserRidesShares = async (req, res) => {
   console.log("getUserRideShares Route Called");
+
   try {
     let nearByRideShares = await NearByRideShare.find({
       sharerId: { $in: [req.body.sharerId] },

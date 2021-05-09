@@ -37,6 +37,7 @@ exports.createShare = function (io) {
 };
 exports.getUserNearByRideShares = async (req, res) => {
   console.log("getNearByRideShares Route Called");
+  // console.log("Socket Id", socketId);
   try {
     let nearByRideShares = await NearByRideShare.find({
       sharerId: { $in: [req.body.sharerId] },
@@ -62,7 +63,8 @@ exports.getUserNearByRideShares = async (req, res) => {
 
 exports.getAllNearByRideShares = async (req, res) => {
   console.log("getNearByRideShares Route Called");
-  console.log("called");
+  // console.log("Sockkkk");
+  // console.log("Global SocketId", socketId);
 
   try {
     let nearByRideShares = await NearByRideShare.find({
@@ -88,7 +90,7 @@ exports.getAllNearByRideShares = async (req, res) => {
   }
 };
 
-exports.createNearByBooking = function (io, socketId) {
+exports.createNearByBooking = function (io) {
   console.log("SocketId in createNearByBooking", socketId);
   return async (req, res) => {
     console.log("createNearByRideShare Booking Route Called");
@@ -159,7 +161,7 @@ exports.createNearByBooking = function (io, socketId) {
   };
 };
 
-exports.acceptNearByBooking = function (io, socketId) {
+exports.acceptNearByBooking = function (io) {
   return async (req, res) => {
     console.log("acceptNearByRideShare Booking Route Called");
     let availerName = "";
