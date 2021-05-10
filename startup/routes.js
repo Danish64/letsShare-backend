@@ -20,6 +20,7 @@ const foodShares = require("../routes/Shares/Food");
 
 //Space Routes
 const userSpaces = require("../routes/Assets/Space");
+const residenceSpaceShares = require("../routes/Shares/Space/Residence");
 
 module.exports = function (app, io) {
   app.use(express.json());
@@ -35,4 +36,5 @@ module.exports = function (app, io) {
   app.use("/api/v1/userFoods", userFoods);
   app.use("/api/v1/foodShares", foodShares);
   app.use("/api/v1/userSpaces", userSpaces);
+  app.use("/api/v1/residenceSpaceShares", residenceSpaceShares);
 };
