@@ -1,5 +1,10 @@
 const { NearByRideShare } = require("../../../models/Shares/Ride/NearByRide");
+const {
+  UserAvailedRides,
+} = require("../../../models/Shares/Ride/UserAvailedRides");
 const { User } = require("../../../models/user");
+
+var _ = require("lodash");
 exports.createShare = function (io) {
   return async (req, res) => {
     console.log("createNearByRideShare Route Called");
@@ -177,11 +182,28 @@ exports.acceptNearByBooking = function (io) {
         });
       }
 
+      let user = await User.findById(req.body.availerId);
+
+      if (!user) {
+        return res.status(200).send({
+          status: "error",
+          errorCode: 400,
+          message: "Wrong availer id",
+        });
+      }
+
       let bookings = nearByRideShare.bookings;
       let acceptedBooking = {};
 
       for (let booking of bookings) {
         if (booking["_id"].toString().trim() === req.body.bookingId.trim()) {
+          if (booking.isAccepted) {
+            return res.status(200).send({
+              status: "Failure",
+              errorCode: 400,
+              message: "Booking Already Accepted",
+            });
+          }
           booking.isAccepted = true;
           nearByRideShare.seatsAvailable =
             nearByRideShare.seatsAvailable - booking.availerSeats;
@@ -195,19 +217,20 @@ exports.acceptNearByBooking = function (io) {
         nearByRideShare.isAvailable = false;
       }
 
-      let user = await User.findById(req.body.availerId);
+      let shareAvailedTemp = _.omit(
+        JSON.parse(JSON.stringify(nearByRideShare)),
+        ["_id"]
+      );
+      const availedNearByRideShare = {
+        ...shareAvailedTemp,
+        shareId: `${nearByRideShare._id}`,
+        availerId: req.body.availerId,
+      };
 
-      if (!user) {
-        return res.status(200).send({
-          status: "error",
-          errorCode: 400,
-          message: "Wrong availer id",
-        });
-      }
+      // console.log("Availed Share", availedNearByRideShare);
+      let availNearByRideShare = new UserAvailedRides(availedNearByRideShare);
 
-      user.availedAssets.availedRides.push(nearByRideShare);
-
-      await user.save();
+      availNearByRideShare.save();
 
       nearByRideShare.save();
 

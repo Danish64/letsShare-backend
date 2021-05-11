@@ -108,6 +108,11 @@ const nearByRideShareSchema = new mongoose.Schema({
 
   bookings: [BookingSchema],
 
+  isCompleted: {
+    type: Boolean,
+    default: false,
+  },
+
   createdDate: {
     type: Date,
     default: Date.now,

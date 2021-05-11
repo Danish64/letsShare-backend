@@ -108,6 +108,10 @@ const cityToCityRideShareSchema = new mongoose.Schema({
   },
 
   bookings: [BookingSchema],
+  isCompleted: {
+    type: Boolean,
+    default: false,
+  },
 
   createdDate: {
     type: Date,

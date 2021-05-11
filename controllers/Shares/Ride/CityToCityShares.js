@@ -2,7 +2,10 @@ const {
   CityToCityRideShare,
 } = require("../../../models/Shares/Ride/CityToCity");
 const { User } = require("../../../models/user");
-
+const {
+  UserAvailedRides,
+} = require("../../../models/Shares/Ride/UserAvailedRides");
+var _ = require("lodash");
 exports.createShare = async (req, res) => {
   console.log("createCityToCityShare Route Called");
   try {
@@ -186,9 +189,19 @@ exports.acceptCityToCityBooking = async (req, res) => {
         .send({ status: "error", errorCode: 400, message: "Wrong availer id" });
     }
 
-    user.availedAssets.availedRides.push(cityToCityRideShare);
+    let shareAvailedTemp = _.omit(
+      JSON.parse(JSON.stringify(cityToCityRideShare)),
+      ["_id"]
+    );
+    const availedRideShareTemp = {
+      ...shareAvailedTemp,
+      shareId: `${cityToCityRideShare._id}`,
+      availerId: req.body.availerId,
+    };
 
-    await user.save();
+    let availedRideShare = new UserAvailedRides(availedRideShareTemp);
+
+    availedRideShare.save();
 
     cityToCityRideShare.save();
 

@@ -1,5 +1,9 @@
 const { TourRideShare } = require("../../../models/Shares/Ride/TourRide");
 const { User } = require("../../../models/user");
+const {
+  UserAvailedRides,
+} = require("../../../models/Shares/Ride/UserAvailedRides");
+var _ = require("lodash");
 
 exports.createShare = async (req, res) => {
   console.log("createTourRideShare Route Called");
@@ -155,6 +159,13 @@ exports.acceptTourRideShareBooking = async (req, res) => {
       });
     }
 
+    let user = await User.findById(req.body.availerId);
+
+    if (!user) {
+      return res
+        .status(200)
+        .send({ status: "error", errorCode: 400, message: "Wrong availer id" });
+    }
     let bookings = tourRideShare.bookings;
 
     for (let booking of bookings) {
@@ -172,17 +183,19 @@ exports.acceptTourRideShareBooking = async (req, res) => {
     }
 
     // console.log("Updated Share", TourRideShare.seatsAvailable);
-    let user = await User.findById(req.body.availerId);
 
-    if (!user) {
-      return res
-        .status(200)
-        .send({ status: "error", errorCode: 400, message: "Wrong availer id" });
-    }
+    let shareAvailedTemp = _.omit(JSON.parse(JSON.stringify(tourRideShare)), [
+      "_id",
+    ]);
+    const availedRideShareTemp = {
+      ...shareAvailedTemp,
+      shareId: `${tourRideShare._id}`,
+      availerId: req.body.availerId,
+    };
 
-    user.availedAssets.availedRides.push(tourRideShare);
+    let availedRideShare = new UserAvailedRides(availedRideShareTemp);
 
-    await user.save();
+    availedRideShare.save();
 
     tourRideShare.save();
 
