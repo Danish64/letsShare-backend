@@ -30,7 +30,7 @@ module.exports = function (app, io) {
   app.use("/api/v1/nearByRideShares", nearByRideShares(io));
   app.use("/api/v1/cityToCityRideShares", cityToCityRideShares);
   app.use("/api/v1/tourRideShares", tourRideShares);
-  app.use("/api/v1/userRideShares", allRidesShares);
+  app.use("/api/v1/userRides", allRidesShares);
   app.use("/api/v1/userGoods", userGoods);
   app.use("/api/v1/goodShares", goodShares);
   app.use("/api/v1/userFoods", userFoods);

@@ -28,9 +28,10 @@ const BookingSchema = new mongoose.Schema({
     latitude: { type: String },
     longitude: { type: String },
   },
-  isCompleted: {
-    type: Boolean,
-    default: false,
+  availerDropOffLocation: {
+    address: { type: String },
+    latitude: { type: String },
+    longitude: { type: String },
   },
 
   isAccepted: {
@@ -39,8 +40,16 @@ const BookingSchema = new mongoose.Schema({
   },
 });
 
-const tourRideShareSchema = new mongoose.Schema({
+const userAvailedRideSchema = new mongoose.Schema({
   sharerId: {
+    type: mongoose.ObjectId,
+    required: true,
+  },
+  availerId: {
+    type: mongoose.ObjectId,
+    required: true,
+  },
+  shareId: {
     type: mongoose.ObjectId,
     required: true,
   },
@@ -56,7 +65,7 @@ const tourRideShareSchema = new mongoose.Schema({
   registrationNumber: {
     type: String,
     required: true,
-    minlength: 5,
+    minlength: 2,
     maxlength: 50,
   },
   rideType: {
@@ -74,7 +83,6 @@ const tourRideShareSchema = new mongoose.Schema({
   rideCategory: {
     type: String,
     required: true,
-    default: "TourRide",
   },
   startLocation: {
     address: { type: String },
@@ -85,16 +93,6 @@ const tourRideShareSchema = new mongoose.Schema({
     address: { type: String },
     latitude: { type: String },
     longitude: { type: String },
-  },
-  fare: {
-    type: String,
-  },
-  seatsAvailable: {
-    type: Number,
-  },
-  isAvailable: {
-    type: Boolean,
-    default: true,
   },
   departureDate: {
     type: String,
@@ -112,6 +110,29 @@ const tourRideShareSchema = new mongoose.Schema({
     type: String,
   },
 
+  routeInfo: {
+    type: String,
+  },
+  fare: {
+    type: String,
+  },
+  seatsAvailable: {
+    type: Number,
+  },
+  isAvailable: {
+    type: Boolean,
+    default: true,
+  },
+
+  departureTime: {
+    type: String,
+    required: false,
+  },
+  isCompleted: {
+    type: Boolean,
+    default: false,
+  },
+
   bookings: [BookingSchema],
 
   createdDate: {
@@ -120,6 +141,9 @@ const tourRideShareSchema = new mongoose.Schema({
   },
 });
 
-const TourRideShare = mongoose.model("TourRideShare", tourRideShareSchema);
+const UserAvailedRides = mongoose.model(
+  "UserAvailedRides",
+  userAvailedRideSchema
+);
 
-exports.TourRideShare = TourRideShare;
+exports.UserAvailedRides = UserAvailedRides;

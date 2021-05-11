@@ -16,8 +16,7 @@ exports.createShare = async (req, res) => {
         .send({ status: "error", errorCode: 400, message: "Wrong user id" });
     }
 
-    user.sharedAssets.sharedSpaces.push(residenceSpaceShare);
-
+    await user.save();
     await residenceSpaceShare.save();
 
     res.status(200).send({
@@ -101,6 +100,20 @@ exports.createResidenceSpaceBooking = async (req, res) => {
 
     const newBooking = { ...req.body };
 
+    const checkBooking = residenceSpaceShare.bookings.filter((booking) => {
+      return (
+        booking.availerId.toString().trim() === newBooking.availerId.trim()
+      );
+    });
+    // console.log("check booking array", checkBooking);
+    if (checkBooking.length > 0) {
+      return res.status(200).send({
+        status: "Error",
+        errorCode: 400,
+        message: "Booking Exists ! Same user cannot avail the share twice.",
+      });
+    }
+
     if (residenceSpaceShare.singleShareAbleUnit === "room") {
       if (residenceSpaceShare.roomsAvailable < newBooking.availerRooms) {
         return res.status(200).send({
@@ -119,19 +132,6 @@ exports.createResidenceSpaceBooking = async (req, res) => {
       }
     }
 
-    const checkBooking = residenceSpaceShare.bookings.filter((booking) => {
-      return (
-        booking.availerId.toString().trim() === newBooking.availerId.trim()
-      );
-    });
-    // console.log("check booking array", checkBooking);
-    if (checkBooking.length > 0) {
-      return res.status(200).send({
-        status: "Error",
-        errorCode: 400,
-        message: "Booking Exists ! Same user cannot avail the share twice.",
-      });
-    }
     if (residenceSpaceShare.bookings) {
       residenceSpaceShare.bookings.unshift(newBooking);
     } else {
@@ -214,11 +214,12 @@ exports.acceptResidenceShareBooking = async (req, res) => {
         .send({ status: "error", errorCode: 400, message: "Wrong availer id" });
     }
 
-    user.availedAssets.availedSpaces.push(residenceSpacesShare);
+    console.log(residenceSpacesShare);
+    // user.availedAssets.availedSpaces.push(residenceSpacesShare);
 
-    await user.save();
+    // await user.save();
 
-    residenceSpacesShare.save();
+    // residenceSpacesShare.save();
 
     return res.status(200).send({
       status: "success",

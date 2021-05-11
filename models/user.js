@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const Joi = require("joi");
 const mongoose = require("mongoose");
 
+const { ResidenceSpaceShareSchema } = require("./Shares/Space/Residence");
 const { NearByRideShareSchema } = require("./Shares/Ride/NearByRide");
 
 const userSchema = new mongoose.Schema({
@@ -69,8 +70,8 @@ const userSchema = new mongoose.Schema({
   },
 
   sharedAssets: {
-    sharedSpaces: [{ spaceName: String }],
-    sharedRides: [{ rideName: String }],
+    sharedSpaces: [ResidenceSpaceShareSchema],
+    sharedRides: [NearByRideShareSchema],
     sharedFoods: [{ foodName: String }],
     sharedGoods: [{ goodName: String }],
   },
@@ -81,7 +82,7 @@ const userSchema = new mongoose.Schema({
     availedFoods: [{ foodName: String }],
     availedGoods: [{ goodName: String }],
   },
-
+  // sharedSpaces: [ResidenceSpaceShareSchema],
   reviews: [{ review: String }],
 });
 userSchema.methods.generateAuthToken = function () {
@@ -129,7 +130,7 @@ function validateUser(user) {
       ),
     }),
     availedAssets: {
-      availedSpaces: [{ spaceName: String }],
+      availedSpaces: [ResidenceSpaceShareSchema],
       availedRides: [NearByRideShareSchema],
       availedFoods: Joi.array().items(
         Joi.object({
@@ -142,6 +143,7 @@ function validateUser(user) {
         })
       ),
     },
+    sharedSpaces: [ResidenceSpaceShareSchema],
     reviews: Joi.array().items(Joi.object({ review: Joi.string() })),
   });
 
