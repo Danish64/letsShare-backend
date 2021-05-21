@@ -97,6 +97,21 @@ const nearByRideShareSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  chargePerKm: {
+    type: Boolean,
+  },
+  perKmFare: {
+    type: Number,
+  },
+  chargePerHour: {
+    type: Boolean,
+  },
+  perHourFare: {
+    type: Number,
+  },
+  chargePerDP: {
+    type: Boolean,
+  },
   // departureDate: {
   //   type: Date,
   //   required: true,
