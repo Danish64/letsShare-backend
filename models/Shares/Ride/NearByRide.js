@@ -91,7 +91,7 @@ const nearByRideShareSchema = new mongoose.Schema({
     type: String,
   },
   fareRate: {
-    type: registrationNumber,
+    type: Number,
   },
   seatsAvailable: {
     type: Number,
