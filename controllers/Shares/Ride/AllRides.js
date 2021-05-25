@@ -46,6 +46,47 @@ exports.getUserRidesShares = async (req, res) => {
   }
 };
 
+exports.getAllRideShares = async (req, res) => {
+  console.log("getAllRideShares Route Called");
+
+  try {
+    let nearByRideShares = await NearByRideShare.find({
+      isAvailable: true,
+      sharerId: { $ne: req.body.sharerId },
+    });
+    let cityToCityRideShares = await CityToCityRideShare.find({
+      isAvailable: true,
+      sharerId: { $ne: req.body.sharerId },
+    });
+    let tourRideShares = await TourRideShare.find({
+      isAvailable: true,
+      sharerId: { $ne: req.body.sharerId },
+    });
+
+    let allRides = [
+      ...nearByRideShares,
+      ...cityToCityRideShares,
+      ...tourRideShares,
+    ];
+    if (allRides.length > 0)
+      return res.status(200).send({
+        status: "success",
+        data: allRides,
+        message: "All Rides",
+      });
+
+    res.status(200).send({
+      status: "success",
+      data: [],
+      message: "No rides!",
+    });
+  } catch (err) {
+    res
+      .status(200)
+      .send({ status: "Error", errorCode: 500, message: err.message });
+  }
+};
+
 exports.getUserAvailedRides = async (req, res) => {
   console.log("getUserAvailedRides Route Called");
 
