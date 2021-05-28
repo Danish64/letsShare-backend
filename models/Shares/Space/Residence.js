@@ -96,7 +96,6 @@ const residenceSpaceShareSchema = new mongoose.Schema({
   houseFare: {
     type: String,
   },
-
   isAvailable: {
     type: Boolean,
     default: true,

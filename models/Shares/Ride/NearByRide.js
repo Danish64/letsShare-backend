@@ -87,8 +87,11 @@ const nearByRideShareSchema = new mongoose.Schema({
     latitude: { type: String },
     longitude: { type: String },
   },
-  fare: {
+  fareMethod: {
     type: String,
+  },
+  fareRate: {
+    type: Number,
   },
   seatsAvailable: {
     type: Number,
@@ -97,6 +100,7 @@ const nearByRideShareSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+
   // departureDate: {
   //   type: Date,
   //   required: true,
