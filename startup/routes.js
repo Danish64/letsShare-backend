@@ -23,6 +23,9 @@ const userSpaces = require("../routes/Assets/Space");
 const residenceSpaceShares = require("../routes/Shares/Space/Residence");
 const allSpaceShares = require("../routes/Shares/Space/AllSpaces");
 
+//Event Routes
+const events = require("../routes/Event/index");
+
 module.exports = function (app, io) {
   app.use(express.json());
   app.use("/api/v1/users", users);
@@ -39,4 +42,5 @@ module.exports = function (app, io) {
   app.use("/api/v1/userSpaces", userSpaces);
   app.use("/api/v1/residenceSpaceShares", residenceSpaceShares);
   app.use("/api/v1/allSpaces", allSpaceShares);
+  app.use("/api/v1/events", events(io));
 };

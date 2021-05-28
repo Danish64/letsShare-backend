@@ -19,10 +19,6 @@ exports.createShare = function (io) {
           .send({ status: "error", errorCode: 400, message: "Wrong user id" });
       }
 
-      user.sharedAssets.sharedRides.push(nearByRideShare);
-
-      await user.save();
-
       await nearByRideShare.save();
 
       //Broadcast Event
