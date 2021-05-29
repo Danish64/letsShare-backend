@@ -1,5 +1,10 @@
 const { FoodShare } = require("../../../models/Shares/Food");
 const { User } = require("../../../models/user");
+var _ = require("lodash");
+const {
+  UserAvailedFoods,
+} = require("../../../models/Shares/Food/userAvailedFoods");
+
 exports.createShare = async (req, res) => {
   console.log("createFoodShare Route Called");
   try {
@@ -178,9 +183,18 @@ exports.acceptFoodShareBooking = async (req, res) => {
       foodShare.isAvailable = false;
     }
 
-    user.availedAssets.availedFoods.push(foodShare);
+    let shareAvailedTemp = _.omit(JSON.parse(JSON.stringify(foodShare)), [
+      "_id",
+    ]);
+    const availedFoodShare = {
+      ...shareAvailedTemp,
+      shareId: `${foodShare._id}`,
+      availerId: req.body.availerId,
+    };
 
-    await user.save();
+    let availFoodShare = new UserAvailedFoods(availedFoodShare);
+
+    availFoodShare.save();
 
     await foodShare.save();
 
@@ -191,6 +205,41 @@ exports.acceptFoodShareBooking = async (req, res) => {
     });
   } catch (err) {
     return res
+      .status(200)
+      .send({ status: "Error", errorCode: 500, message: err.message });
+  }
+};
+
+exports.getUserAvailedFoods = async (req, res) => {
+  console.log("getUserAvailedFoods Route Called");
+
+  const activeFilter = {
+    availerId: { $in: [req.body.availerId] },
+    isCompleted: false,
+  };
+  const filter = req.body.active
+    ? activeFilter
+    : { availerId: { $in: [req.body.availerId] } };
+
+  // console.log("Filter", filter);
+
+  try {
+    let userAvailedFoods = await UserAvailedFoods.find(filter);
+
+    if (userAvailedFoods.length > 0)
+      return res.status(200).send({
+        status: "success",
+        data: userAvailedFoods,
+        message: "User's Availed Foods",
+      });
+
+    res.status(200).send({
+      status: "success",
+      data: [],
+      message: "User have not availed any foods!",
+    });
+  } catch (err) {
+    res
       .status(200)
       .send({ status: "Error", errorCode: 500, message: err.message });
   }

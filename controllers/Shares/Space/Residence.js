@@ -1,7 +1,11 @@
 const {
   ResidenceSpaceShare,
 } = require("../../../models/Shares/Space/Residence");
+const {
+  UserAvailedSpaces,
+} = require("../../../models/Shares/Space/UserAvailedSpaces");
 const { User } = require("../../../models/user");
+var _ = require("lodash");
 
 exports.createShare = async (req, res) => {
   console.log("createResidenceSpaceShare Route Called");
@@ -95,8 +99,6 @@ exports.createResidenceSpaceBooking = async (req, res) => {
         message: "Share is not available.",
       });
     }
-
-    // console.log("getting bookings", cityToCityRideShare.bookings);
 
     const newBooking = { ...req.body };
 
@@ -204,8 +206,6 @@ exports.acceptResidenceShareBooking = async (req, res) => {
       residenceSpacesShare.isAvailable = false;
     }
 
-    // console.log("Updated Share", cityToCityRideShare.seatsAvailable);
-
     let user = await User.findById(req.body.availerId);
 
     if (!user) {
@@ -214,10 +214,20 @@ exports.acceptResidenceShareBooking = async (req, res) => {
         .send({ status: "error", errorCode: 400, message: "Wrong availer id" });
     }
 
-    console.log(residenceSpacesShare);
-    // user.availedAssets.availedSpaces.push(residenceSpacesShare);
+    let shareAvailedTemp = _.omit(
+      JSON.parse(JSON.stringify(residenceSpacesShare)),
+      ["_id"]
+    );
+    const availedResidenceShare = {
+      ...shareAvailedTemp,
+      shareId: `${residenceSpacesShare._id}`,
+      availerId: req.body.availerId,
+    };
 
-    // await user.save();
+    // console.log("Availed Share", availedNearByRideShare);
+    let availResidenceSpaceShare = new UserAvailedSpaces(availedResidenceShare);
+
+    availResidenceSpaceShare.save();
 
     residenceSpacesShare.save();
 

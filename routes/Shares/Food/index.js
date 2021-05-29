@@ -6,6 +6,7 @@ const {
   getAllFoodShares,
   createFoodShareBooking,
   acceptFoodShareBooking,
+  getUserAvailedFoods,
 } = require("../../../controllers/Shares/Food");
 
 router.route("/createFoodShare").post(createShare);
@@ -13,5 +14,6 @@ router.route("/getUserFoodShares").post(getUserFoodShares);
 router.route("/acceptFoodShareBooking").put(acceptFoodShareBooking);
 router.route("/createFoodShareBooking/:id").post(createFoodShareBooking);
 router.route("/getAllFoodShares").post(getAllFoodShares);
+router.route("/userAvailedFoods").post(getUserAvailedFoods);
 
 module.exports = router;
