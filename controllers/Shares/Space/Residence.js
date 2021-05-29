@@ -219,7 +219,7 @@ exports.acceptResidenceShareBooking = async (req, res) => {
 
     // await user.save();
 
-    // residenceSpacesShare.save();
+    residenceSpacesShare.save();
 
     return res.status(200).send({
       status: "success",
