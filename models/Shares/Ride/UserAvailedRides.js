@@ -113,8 +113,11 @@ const userAvailedRideSchema = new mongoose.Schema({
   routeInfo: {
     type: String,
   },
-  fare: {
+  fareMethod: {
     type: String,
+  },
+  fareRate: {
+    type: Number,
   },
   seatsAvailable: {
     type: Number,
