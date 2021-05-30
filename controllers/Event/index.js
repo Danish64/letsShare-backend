@@ -86,6 +86,30 @@ exports.getAllEvents = async (req, res) => {
   }
 };
 
+exports.getEventById = async (req, res) => {
+  console.log("getSingleEvent Route Called");
+
+  try {
+    let event = await Event.findById(req.body.id);
+    if (!event)
+      return res.status(200).send({
+        status: "success",
+        data: "",
+        message: "Wrong Event Id",
+      });
+
+    res.status(200).send({
+      status: "success",
+      data: event,
+      message: "Event by id",
+    });
+  } catch (err) {
+    res
+      .status(200)
+      .send({ status: "Error", errorCode: 500, message: err.message });
+  }
+};
+
 exports.createEventSharings = function (io) {
   return async (req, res) => {
     console.log("createEventSharings Route Called");

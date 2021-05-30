@@ -5,6 +5,7 @@ const {
   getUserCreatedEvents,
   getAllEvents,
   createEventSharings,
+  getEventById,
 } = require("../../controllers/Event");
 
 module.exports = function (io) {
@@ -12,6 +13,7 @@ module.exports = function (io) {
   router.route("/getUserCreatedEvents").post(getUserCreatedEvents);
   router.route("/createEventSharings/:id").post(createEventSharings(io));
   router.route("/getAllEvents").post(getAllEvents);
+  router.route("/getEvent").post(getEventById);
 
   return router;
 };
