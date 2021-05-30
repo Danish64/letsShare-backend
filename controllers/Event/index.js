@@ -86,8 +86,8 @@ exports.getAllEvents = async (req, res) => {
   }
 };
 
-exports.getEventById = async (req, res) => {
-  console.log("getSingleEvent Route Called");
+exports.getEventShares = async (req, res) => {
+  console.log("getEventShares Route Called");
 
   try {
     let event = await Event.findById(req.body.id);
@@ -98,10 +98,17 @@ exports.getEventById = async (req, res) => {
         message: "Wrong Event Id",
       });
 
+    if (event.sharings.length === 0)
+      return res.status(200).send({
+        status: "success",
+        data: "No shares",
+        message: "Sharings Empty",
+      });
+
     res.status(200).send({
       status: "success",
-      data: event,
-      message: "Event by id",
+      data: event.sharings,
+      message: "Event sharings",
     });
   } catch (err) {
     res
