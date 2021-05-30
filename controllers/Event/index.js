@@ -94,14 +94,14 @@ exports.getEventShares = async (req, res) => {
     if (!event)
       return res.status(200).send({
         status: "success",
-        data: "",
+        data: [],
         message: "Wrong Event Id",
       });
 
     if (event.sharings.length === 0)
       return res.status(200).send({
         status: "success",
-        data: "No shares",
+        data: [],
         message: "Sharings Empty",
       });
 
