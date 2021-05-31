@@ -95,6 +95,121 @@ exports.getUserWithEmail = async (req, res) => {
   }
 };
 
+exports.updateUserName = async (req, res) => {
+  let user = await User.findOneAndUpdate(
+    { _id: req.body.id },
+    { name: req.body.name },
+    { new: true }
+  );
+  if (!user) {
+    return res.status(200).send({
+      status: "success",
+      data: { userExists: false },
+      message: "No User Exist",
+    });
+  } else {
+    return res.status(200).send({
+      status: "success",
+      data: `User Name Updated ${user.name}`,
+      message: "Name Updated",
+    });
+  }
+};
+
+exports.updateUserPhone = async (req, res) => {
+  let user = await User.findOneAndUpdate(
+    { _id: req.body.id },
+    { phone: req.body.phone },
+    { new: true }
+  );
+  if (!user) {
+    return res.status(200).send({
+      status: "failed",
+      message: "No User Exist",
+    });
+  } else {
+    return res.status(200).send({
+      status: "success",
+      data: `User Phone Updated ${user.phone}`,
+      message: "Phone Updated",
+    });
+  }
+};
+
+exports.updateUserCity = async (req, res) => {
+  let user = await User.findOneAndUpdate(
+    { _id: req.body.id },
+    { city: req.body.city },
+    { new: true }
+  );
+  if (!user) {
+    return res.status(200).send({
+      status: "failed",
+      message: "No User Exist",
+    });
+  } else {
+    return res.status(200).send({
+      status: "success",
+      data: `User City Updated ${user.city}`,
+      message: "city Updated",
+    });
+  }
+};
+
+exports.updateUserHomeAddress = async (req, res) => {
+  let user = await User.findById(req.body.id);
+  if (!user) {
+    return res.status(200).send({
+      status: "failed",
+      message: "No User Exist",
+    });
+  } else {
+    user.homeAddress = req.body.homeAddress;
+    await user.save();
+    return res.status(200).send({
+      status: "success",
+      data: `User Home Address Updated ${user.homeAddress}`,
+      message: "Home Address Updated",
+    });
+  }
+};
+
+exports.updateUserWorkAddress = async (req, res) => {
+  let user = await User.findById(req.body.id);
+  if (!user) {
+    return res.status(200).send({
+      status: "failed",
+      message: "No User Exist",
+    });
+  } else {
+    user.workAddress = req.body.workAddress;
+    await user.save();
+    return res.status(200).send({
+      status: "success",
+      data: `User Work Address Updated ${user.workAddress}`,
+      message: "Work Address Updated",
+    });
+  }
+};
+
+exports.updateProfilePicture = async (req, res) => {
+  let user = await User.findById(req.body.id);
+  if (!user) {
+    return res.status(200).send({
+      status: "Failure",
+      message: "No User Exist",
+    });
+  } else {
+    user.profilePicture = req.body.picUri;
+    await user.save();
+    return res.status(200).send({
+      status: "success",
+      data: `Picture updated-> ${req.body.picUri}`,
+      message: "Picture Updated",
+    });
+  }
+};
+
 // exports.updateUserEmail = async (req, res) => {
 //   const { error } = validateEmail(req.body);
 //   if (error)

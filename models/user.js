@@ -82,6 +82,7 @@ const userSchema = new mongoose.Schema({
     availedFoods: [{ foodName: String }],
     availedGoods: [{ goodName: String }],
   },
+  profilePicture: String,
   // sharedSpaces: [ResidenceSpaceShareSchema],
   reviews: [{ review: String }],
 });
