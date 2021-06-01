@@ -3,6 +3,7 @@ const {
   UserAvailedRides,
 } = require("../../../models/Shares/Ride/UserAvailedRides");
 const { User } = require("../../../models/user");
+var { sendGlobalNotification } = require("../../../helpers/Notifications");
 
 var _ = require("lodash");
 exports.createShare = function (io) {
@@ -18,6 +19,11 @@ exports.createShare = function (io) {
           .status(200)
           .send({ status: "error", errorCode: 400, message: "Wrong user id" });
       }
+
+      sendGlobalNotification(
+        `Nearby Ride Shared - ${req.body.rideName}`,
+        `${req.body.seatsAvailable}x seats available, Be the first ${req.body.ownerContactNumber}`
+      );
 
       await nearByRideShare.save();
 

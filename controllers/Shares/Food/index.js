@@ -4,12 +4,12 @@ var _ = require("lodash");
 const {
   UserAvailedFoods,
 } = require("../../../models/Shares/Food/userAvailedFoods");
+var { sendGlobalNotification } = require("../../../helpers/Notifications");
 
 exports.createShare = async (req, res) => {
   console.log("createFoodShare Route Called");
   try {
     let foodShare = new FoodShare(req.body);
-
     let user = await User.findById(req.body.sharerId);
 
     if (!user) {
@@ -19,6 +19,11 @@ exports.createShare = async (req, res) => {
     }
 
     user.sharedAssets.sharedFoods.push(foodShare);
+
+    sendGlobalNotification(
+      `Food Shared - ${req.body.title}`,
+      `${req.body.quantity}x available, Be the first ${req.body.ownerContactNumber}`
+    );
 
     await user.save();
 

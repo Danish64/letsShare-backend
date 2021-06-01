@@ -77,7 +77,6 @@ const residenceSpaceShareSchema = new mongoose.Schema({
 
   singleShareAbleUnit: {
     type: String,
-    required: true,
     enum: ["room", "bed", "house"],
   },
 

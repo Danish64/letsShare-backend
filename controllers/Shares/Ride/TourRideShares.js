@@ -4,6 +4,7 @@ const {
   UserAvailedRides,
 } = require("../../../models/Shares/Ride/UserAvailedRides");
 var _ = require("lodash");
+var { sendGlobalNotification } = require("../../../helpers/Notifications");
 
 exports.createShare = async (req, res) => {
   console.log("createTourRideShare Route Called");
@@ -19,6 +20,15 @@ exports.createShare = async (req, res) => {
     }
 
     user.sharedAssets.sharedRides.push(tourRideShare);
+
+    sendGlobalNotification(
+      `Tour Ride Shared - ${req.body.rideName}`,
+      `${req.body.seatsAvailable}x seats available ${"\n"}${
+        req.body.startLocation.address
+      } to ${req.body.destinationLocation.address} ${"\n"}${
+        req.body.tourInfo
+      }${"\n"}Be the first ${req.body.ownerContactNumber}`
+    );
 
     await tourRideShare.save();
 

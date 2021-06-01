@@ -4,6 +4,7 @@ const {
   UserAvailedGoods,
 } = require("../../../models/Shares/Good/userAvailedGoods");
 var _ = require("lodash");
+var { sendGlobalNotification } = require("../../../helpers/Notifications");
 
 exports.createShare = async (req, res) => {
   console.log("createGoodShare Route Called");
@@ -19,6 +20,11 @@ exports.createShare = async (req, res) => {
     }
 
     user.sharedAssets.sharedGoods.push(goodShare);
+
+    sendGlobalNotification(
+      `Goods Shared - ${req.body.title}`,
+      `${req.body.quantity}x available, Be the first ${req.body.ownerContactNumber}`
+    );
 
     await user.save();
 

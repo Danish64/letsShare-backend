@@ -6,6 +6,7 @@ const {
 } = require("../../../models/Shares/Space/UserAvailedSpaces");
 const { User } = require("../../../models/user");
 var _ = require("lodash");
+var { sendGlobalNotification } = require("../../../helpers/Notifications");
 
 exports.createShare = async (req, res) => {
   console.log("createResidenceSpaceShare Route Called");
@@ -19,6 +20,13 @@ exports.createShare = async (req, res) => {
         .status(200)
         .send({ status: "error", errorCode: 400, message: "Wrong user id" });
     }
+
+    sendGlobalNotification(
+      `Residence Space Shared - ${req.body.spaceTitle}`,
+      `${req.body.spaceLocation.address} ${"\n"}${
+        req.body.spaceSpecifications
+      } ${"\n"}Be the first ${req.body.ownerContactNumber}`
+    );
 
     await user.save();
     await residenceSpaceShare.save();

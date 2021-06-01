@@ -1,6 +1,8 @@
 const { Event } = require("../../models/Event");
 const { User } = require("../../models/user");
 var _ = require("lodash");
+var { sendGlobalNotification } = require("../../helpers/Notifications");
+
 exports.createEvent = function (io) {
   console.log("createEvent");
   return async (req, res) => {
@@ -15,6 +17,11 @@ exports.createEvent = function (io) {
           .status(200)
           .send({ status: "error", errorCode: 400, message: "Wrong user id" });
       }
+
+      sendGlobalNotification(
+        `New Event - ${req.body.eventTitle}`,
+        `${req.body.managerName} has created a new event, will start on ${req.body.eventStartDate}`
+      );
 
       await event.save();
 
@@ -145,6 +152,11 @@ exports.createEventSharings = function (io) {
         event.sharings = sharings;
         socketSharings.unshift(newSharing);
       }
+
+      sendGlobalNotification(
+        `Avail the share`,
+        `${req.body.sharerName} is sharing  ${req.body.shareType}, Contact them to avail it ${req.body.sharerContact}`
+      );
 
       event.save();
 
