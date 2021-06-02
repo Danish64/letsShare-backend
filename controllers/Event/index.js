@@ -9,7 +9,6 @@ exports.createEvent = function (io) {
     console.log("createEvent Route Called");
     try {
       let event = new Event(req.body);
-
       let user = await User.findById(req.body.managerId);
 
       if (!user) {
