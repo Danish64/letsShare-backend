@@ -222,6 +222,8 @@ exports.acceptResidenceShareBooking = async (req, res) => {
         .send({ status: "error", errorCode: 400, message: "Wrong availer id" });
     }
 
+    console.log("Availed Residence Share");
+
     let shareAvailedTemp = _.omit(
       JSON.parse(JSON.stringify(residenceSpacesShare)),
       ["_id"]
@@ -232,12 +234,12 @@ exports.acceptResidenceShareBooking = async (req, res) => {
       availerId: req.body.availerId,
     };
 
-    console.log("Availed Residence Share", availedNearByRideShare);
+    // console.log("Availed Residence Share", availedResidenceShare);
     let availResidenceSpaceShare = new UserAvailedSpaces(availedResidenceShare);
 
-    await availResidenceSpaceShare.save();
+    availResidenceSpaceShare.save();
 
-    await residenceSpacesShare.save();
+    residenceSpacesShare.save();
 
     return res.status(200).send({
       status: "success",
