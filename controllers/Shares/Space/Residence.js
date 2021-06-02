@@ -232,12 +232,12 @@ exports.acceptResidenceShareBooking = async (req, res) => {
       availerId: req.body.availerId,
     };
 
-    // console.log("Availed Share", availedNearByRideShare);
+    console.log("Availed Residence Share", availedNearByRideShare);
     let availResidenceSpaceShare = new UserAvailedSpaces(availedResidenceShare);
 
-    availResidenceSpaceShare.save();
+    await availResidenceSpaceShare.save();
 
-    residenceSpacesShare.save();
+    await residenceSpacesShare.save();
 
     return res.status(200).send({
       status: "success",
