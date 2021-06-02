@@ -8,9 +8,6 @@ const {
 exports.getAllSpaceShares = async (req, res) => {
   console.log("getAllSpaceShares Route Called");
 
-  console.log("sharer ID type", typeof req.body.sharerId);
-  console.log("sharer ID is ", req.body.sharerId);
-
   try {
     let residenceShares = await ResidenceSpaceShare.find({
       isAvailable: true,
