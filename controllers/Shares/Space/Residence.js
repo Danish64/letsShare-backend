@@ -150,6 +150,20 @@ exports.createResidenceSpaceBooking = async (req, res) => {
       residenceSpaceShare.bookings = bookings;
     }
 
+    let shareAvailedTemp = _.omit(
+      JSON.parse(JSON.stringify(residenceSpaceShare)),
+      ["_id"]
+    );
+    const availedResidenceShare = {
+      ...shareAvailedTemp,
+      shareId: `${residenceSpaceShare._id}`,
+      availerId: req.body.availerId,
+    };
+
+    let availResidenceSpaceShare = new UserAvailedSpaces(availedResidenceShare);
+
+    availResidenceSpaceShare.save();
+
     residenceSpaceShare.save();
 
     return res.status(200).send({
@@ -173,6 +187,12 @@ exports.acceptResidenceShareBooking = async (req, res) => {
       req.body.shareId
     );
 
+    let availedSpaceShareList = await UserAvailedSpaces.find({
+      shareId: req.body.shareId,
+    });
+
+    let availedSpaceShare = availedSpaceShareList[0];
+
     if (!residenceSpacesShare.isAvailable) {
       return res.status(200).send({
         status: "Error",
@@ -180,6 +200,8 @@ exports.acceptResidenceShareBooking = async (req, res) => {
         message: "Booking capacity is full.",
       });
     }
+
+    //Changes in share's booking
 
     let bookings = residenceSpacesShare.bookings;
 
@@ -193,6 +215,7 @@ exports.acceptResidenceShareBooking = async (req, res) => {
           });
         }
         booking.isAccepted = true;
+        booking.bookingStatus = "Accepted";
         if (booking.availerRooms) {
           residenceSpacesShare.roomsAvailable =
             residenceSpacesShare.roomsAvailable - booking.availerRooms;
@@ -207,44 +230,129 @@ exports.acceptResidenceShareBooking = async (req, res) => {
       }
     }
 
+    //changes in userAvailedSpaces booking
+
+    let availedSpacesBookings = availedSpaceShare.bookings;
+
+    for (let booking of availedSpacesBookings) {
+      if (booking["_id"].toString().trim() === req.body.bookingId.trim()) {
+        booking.isAccepted = true;
+        booking.bookingStatus = "Accepted";
+        if (booking.availerRooms) {
+          availedSpaceShare.roomsAvailable =
+            availedSpaceShare.roomsAvailable - booking.availerRooms;
+        } else if (booking.availerBeds) {
+          availedSpaceShare.bedsAvailable =
+            availedSpaceShare.bedsAvailable - booking.availerBeds;
+        } else if (booking.isAvailingWhole) {
+          availedSpaceShare.isAvailable = false;
+        }
+      }
+    }
+
     if (
       residenceSpacesShare.roomsAvailable === 0 ||
       residenceSpacesShare.bedsAvailable === 0
     ) {
       residenceSpacesShare.isAvailable = false;
     }
-
-    let user = await User.findById(req.body.availerId);
-
-    if (!user) {
-      return res
-        .status(200)
-        .send({ status: "error", errorCode: 400, message: "Wrong availer id" });
-    }
-
-    console.log("Availed Residence Share");
-
-    let shareAvailedTemp = _.omit(
-      JSON.parse(JSON.stringify(residenceSpacesShare)),
-      ["_id"]
-    );
-    const availedResidenceShare = {
-      ...shareAvailedTemp,
-      shareId: `${residenceSpacesShare._id}`,
-      availerId: req.body.availerId,
-    };
-
-    // console.log("Availed Residence Share", availedResidenceShare);
-    let availResidenceSpaceShare = new UserAvailedSpaces(availedResidenceShare);
-
-    availResidenceSpaceShare.save();
-
+    availedSpaceShare.save();
     residenceSpacesShare.save();
 
     return res.status(200).send({
       status: "success",
       data: "",
       message: `${availerName}'s booking accepted.`,
+    });
+  } catch (err) {
+    return res
+      .status(200)
+      .send({ status: "Error", errorCode: 500, message: err.message });
+  }
+};
+
+exports.rejectResidenceShareBooking = async (req, res) => {
+  console.log("rejectResidenceSpaceShare Booking Route Called");
+  let availerName = "";
+
+  try {
+    let residenceSpacesShare = await ResidenceSpaceShare.findById(
+      req.body.shareId
+    );
+
+    let availedSpaceShareList = await UserAvailedSpaces.find({
+      shareId: req.body.shareId,
+    });
+
+    let availedSpaceShare = availedSpaceShareList[0];
+
+    if (!residenceSpacesShare.isAvailable) {
+      return res.status(200).send({
+        status: "Error",
+        errorCode: 400,
+        message: "Booking capacity is full.",
+      });
+    }
+
+    //Changes in share's booking
+
+    let bookings = residenceSpacesShare.bookings;
+
+    for (let booking of bookings) {
+      if (booking["_id"].toString().trim() === req.body.bookingId.trim()) {
+        if (booking.isAccepted) {
+          return res.status(200).send({
+            status: "Error",
+            errorCode: 400,
+            message: "Booking already accepted",
+          });
+        }
+        booking.isAccepted = false;
+        booking.bookingStatus = "Rejected";
+        availerName = booking.availerName;
+      }
+    }
+
+    //changes in userAvailedSpaces booking
+
+    let availedSpacesBookings = availedSpaceShare.bookings;
+
+    for (let booking of availedSpacesBookings) {
+      if (booking["_id"].toString().trim() === req.body.bookingId.trim()) {
+        booking.isAccepted = false;
+        booking.bookingStatus = "Rejected";
+      }
+    }
+    availedSpaceShare.save();
+    residenceSpacesShare.save();
+
+    return res.status(200).send({
+      status: "success",
+      data: "",
+      message: `${availerName}'s booking rejected.`,
+    });
+  } catch (err) {
+    return res
+      .status(200)
+      .send({ status: "Error", errorCode: 500, message: err.message });
+  }
+};
+
+exports.deleteShare = async (req, res) => {
+  console.log("Delete residence Share route called");
+  try {
+    ResidenceSpaceShare.deleteOne({ _id: req.body.id }, function (err) {
+      if (err)
+        return res
+          .status(200)
+          .send({ status: "Error", errorCode: 500, message: err.message });
+      UserAvailedSpaces.deleteOne({ shareId: req.body.id }, function (err) {
+        if (err) return handleError(err);
+        return res.status(200).send({
+          status: "success",
+          message: `Residence Space Share Deleted`,
+        });
+      });
     });
   } catch (err) {
     return res
