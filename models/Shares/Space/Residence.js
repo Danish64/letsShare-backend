@@ -14,7 +14,6 @@ const BookingSchema = new mongoose.Schema({
   availerPhoneNumber: {
     type: String,
   },
-
   availerRooms: {
     type: Number,
   },

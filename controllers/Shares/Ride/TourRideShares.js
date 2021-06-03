@@ -142,6 +142,11 @@ exports.createTourRideShareBooking = async (req, res) => {
     }
 
     tourRideShare.save();
+    sendIndividualNotification(
+      tourRideShare.sharerId,
+      `You have a booking for ${tourRideShare.rideName}`,
+      `${req.body.availerName} has a message: ${req.body.availerMessage}`
+    );
     return res.status(200).send({
       status: "success",
       data: tourRideShare.bookings,
@@ -208,6 +213,12 @@ exports.acceptTourRideShareBooking = async (req, res) => {
     availedRideShare.save();
 
     tourRideShare.save();
+
+    sendIndividualNotification(
+      req.body.availerId,
+      `Booking accepted`,
+      `Hi ${availerName}, Your booking for ${tourRideShare.rideName} is accepted.`
+    );
 
     return res.status(200).send({
       status: "success",

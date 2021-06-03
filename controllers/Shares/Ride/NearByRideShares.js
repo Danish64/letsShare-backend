@@ -3,7 +3,10 @@ const {
   UserAvailedRides,
 } = require("../../../models/Shares/Ride/UserAvailedRides");
 const { User } = require("../../../models/user");
-var { sendGlobalNotification } = require("../../../helpers/Notifications");
+var {
+  sendGlobalNotification,
+  sendIndividualNotification,
+} = require("../../../helpers/Notifications");
 
 var _ = require("lodash");
 exports.createShare = function (io) {
@@ -149,6 +152,11 @@ exports.createNearByBooking = function (io) {
       }
 
       nearByRideShare.save();
+      sendIndividualNotification(
+        nearByRideShare.sharerId,
+        `You have a booking for ${nearByRideShare.rideName}`,
+        `${req.body.availerName} has a message: ${req.body.availerMessage}`
+      );
 
       if (socketId) {
         //emit event on socket id to listen for the created booking
@@ -235,6 +243,12 @@ exports.acceptNearByBooking = function (io) {
       availNearByRideShare.save();
 
       nearByRideShare.save();
+
+      sendIndividualNotification(
+        req.body.availerId,
+        `Booking accepted`,
+        `Hi ${availerName}, Your booking for ${nearByRideShare.rideName} is accepted.`
+      );
 
       if (socketId) {
         io.to(socketId).emit(

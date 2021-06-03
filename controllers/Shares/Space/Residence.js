@@ -6,7 +6,10 @@ const {
 } = require("../../../models/Shares/Space/UserAvailedSpaces");
 const { User } = require("../../../models/user");
 var _ = require("lodash");
-var { sendGlobalNotification } = require("../../../helpers/Notifications");
+var {
+  sendGlobalNotification,
+  sendIndividualNotification,
+} = require("../../../helpers/Notifications");
 
 exports.createShare = async (req, res) => {
   console.log("createResidenceSpaceShare Route Called");
@@ -162,8 +165,13 @@ exports.createResidenceSpaceBooking = async (req, res) => {
 
     let availResidenceSpaceShare = new UserAvailedSpaces(availedResidenceShare);
 
-    availResidenceSpaceShare.save();
+    sendIndividualNotification(
+      residenceSpaceShare.sharerId,
+      `You have a booking for ${residenceSpaceShare.spaceTitle}`,
+      `${req.body.availerName} has a message: ${req.body.availerMessage}`
+    );
 
+    availResidenceSpaceShare.save();
     residenceSpaceShare.save();
 
     return res.status(200).send({
@@ -259,6 +267,12 @@ exports.acceptResidenceShareBooking = async (req, res) => {
     availedSpaceShare.save();
     residenceSpacesShare.save();
 
+    sendIndividualNotification(
+      req.body.availerId,
+      `Booking accepted`,
+      `Hi ${availerName}, Your booking for ${residenceSpacesShare.spaceTitle} is accepted.`
+    );
+
     return res.status(200).send({
       status: "success",
       data: "",
@@ -325,6 +339,12 @@ exports.rejectResidenceShareBooking = async (req, res) => {
     }
     availedSpaceShare.save();
     residenceSpacesShare.save();
+
+    sendIndividualNotification(
+      req.body.availerId,
+      `Booking rejected`,
+      `Hi ${availerName}, Your booking for ${residenceSpacesShare.spaceTitle} is rejected.`
+    );
 
     return res.status(200).send({
       status: "success",

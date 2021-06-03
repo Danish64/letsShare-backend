@@ -4,7 +4,10 @@ var _ = require("lodash");
 const {
   UserAvailedFoods,
 } = require("../../../models/Shares/Food/userAvailedFoods");
-var { sendGlobalNotification } = require("../../../helpers/Notifications");
+var {
+  sendGlobalNotification,
+  sendIndividualNotification,
+} = require("../../../helpers/Notifications");
 
 exports.createShare = async (req, res) => {
   console.log("createFoodShare Route Called");
@@ -138,6 +141,12 @@ exports.createFoodShareBooking = async (req, res) => {
 
     foodShare.save();
 
+    sendIndividualNotification(
+      foodShare.sharerId,
+      `You have a booking for ${foodShare.title}`,
+      `${req.body.availerName} has a message: ${req.body.availerMessage}`
+    );
+
     return res.status(200).send({
       status: "success",
       data: foodShare.bookings,
@@ -198,10 +207,14 @@ exports.acceptFoodShareBooking = async (req, res) => {
     };
 
     let availFoodShare = new UserAvailedFoods(availedFoodShare);
-
     availFoodShare.save();
-
     await foodShare.save();
+
+    sendIndividualNotification(
+      req.body.availerId,
+      `Booking accepted`,
+      `Hi ${availerName}, Your booking for ${foodShare.title} is accepted.`
+    );
 
     return res.status(200).send({
       status: "success",

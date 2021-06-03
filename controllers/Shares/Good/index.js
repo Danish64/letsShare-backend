@@ -4,7 +4,10 @@ const {
   UserAvailedGoods,
 } = require("../../../models/Shares/Good/userAvailedGoods");
 var _ = require("lodash");
-var { sendGlobalNotification } = require("../../../helpers/Notifications");
+var {
+  sendGlobalNotification,
+  sendIndividualNotification,
+} = require("../../../helpers/Notifications");
 
 exports.createShare = async (req, res) => {
   console.log("createGoodShare Route Called");
@@ -139,6 +142,12 @@ exports.createGoodShareBooking = async (req, res) => {
 
     goodShare.save();
 
+    sendIndividualNotification(
+      goodShare.sharerId,
+      `You have a booking for ${goodShare.title}`,
+      `${req.body.availerName} has a message: ${req.body.availerMessage}`
+    );
+
     return res.status(200).send({
       status: "success",
       data: goodShare.bookings,
@@ -204,6 +213,12 @@ exports.acceptGoodShareBooking = async (req, res) => {
     availGoodShare.save();
 
     await goodShare.save();
+
+    sendIndividualNotification(
+      req.body.availerId,
+      `Booking accepted`,
+      `Hi ${availerName}, Your booking for ${goodShare.title} is accepted.`
+    );
 
     return res.status(200).send({
       status: "success",

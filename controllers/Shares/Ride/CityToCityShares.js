@@ -6,7 +6,10 @@ const {
   UserAvailedRides,
 } = require("../../../models/Shares/Ride/UserAvailedRides");
 var _ = require("lodash");
-var { sendGlobalNotification } = require("../../../helpers/Notifications");
+var {
+  sendGlobalNotification,
+  sendIndividualNotification,
+} = require("../../../helpers/Notifications");
 
 exports.createShare = async (req, res) => {
   console.log("createCityToCityShare Route Called");
@@ -142,6 +145,11 @@ exports.createCityToCityBooking = async (req, res) => {
     }
 
     cityToCityRideShare.save();
+    sendIndividualNotification(
+      cityToCityRideShare.sharerId,
+      `You have a booking for ${cityToCityRideShare.rideName}`,
+      `${req.body.availerName} has a message: ${req.body.availerMessage}`
+    );
 
     return res.status(200).send({
       status: "success",
@@ -213,6 +221,12 @@ exports.acceptCityToCityBooking = async (req, res) => {
     availedRideShare.save();
 
     cityToCityRideShare.save();
+
+    sendIndividualNotification(
+      req.body.availerId,
+      `Booking accepted`,
+      `Hi ${availerName}, Your booking for ${cityToCityRideShare.rideName} is accepted.`
+    );
 
     return res.status(200).send({
       status: "success",
