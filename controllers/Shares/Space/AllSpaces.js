@@ -1,6 +1,9 @@
 const {
   ResidenceSpaceShare,
 } = require("../../../models/Shares/Space/Residence");
+const {
+  WorkingSpaceShare,
+} = require("../../../models/Shares/Space/CoworkingSpace");
 
 const {
   UserAvailedSpaces,
@@ -13,8 +16,12 @@ exports.getAllSpaceShares = async (req, res) => {
       isAvailable: true,
       sharerId: { $ne: req.body.sharerId },
     });
+    let workingShares = await WorkingSpaceShare.find({
+      isAvailable: true,
+      sharerId: { $ne: req.body.sharerId },
+    });
 
-    let allSpaces = [...residenceShares];
+    let allSpaces = [...residenceShares, ...workingShares];
     if (allSpaces.length > 0)
       return res.status(200).send({
         status: "success",

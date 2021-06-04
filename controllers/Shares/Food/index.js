@@ -271,7 +271,7 @@ exports.deleteShare = async (req, res) => {
         return res
           .status(200)
           .send({ status: "Error", errorCode: 500, message: err.message });
-      UserAvailedFoods.deleteOne({ shareId: req.body.id }, function (err) {
+      UserAvailedFoods.deleteMany({ shareId: req.body.id }, function (err) {
         if (err) return handleError(err);
         return res.status(200).send({
           status: "success",

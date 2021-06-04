@@ -78,11 +78,6 @@ const workingSpaceShareSchema = new mongoose.Schema({
     default: "Working",
   },
 
-  singleShareAbleUnit: {
-    type: String,
-    enum: ["room", "bed", "house"],
-  },
-
   seatsAvailable: Number,
   seatFare: Number,
   desksAvailable: Number,

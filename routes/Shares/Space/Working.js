@@ -4,20 +4,20 @@ const {
   createShare,
   getUserWorkingSpaceShares,
   getAllWorkingSpaceShares,
+  createWorkingSpaceBooking,
+  acceptWorkingShareBooking,
+  rejectWorkingShareBooking,
+  deleteShare,
 } = require("../../../controllers/Shares/Space/Working");
 
 router.route("/createWorkingSpaceShare").post(createShare);
-// router.route("/deleteResidenceSpaceShare").delete(deleteShare);
+router.route("/deleteWorkingSpaceShare").delete(deleteShare);
 router.route("/getUserWorkingSpaceShares").post(getUserWorkingSpaceShares);
-// router
-//   .route("/acceptResidenceSpaceShareBooking")
-//   .put(acceptResidenceShareBooking);
-// router
-//   .route("/rejectResidenceSpaceShareBooking")
-//   .put(rejectResidenceShareBooking);
-// router
-//   .route("/createResidenceSpaceShareBooking/:id")
-//   .post(createResidenceSpaceBooking);
+router.route("/acceptWorkingSpaceShareBooking").put(acceptWorkingShareBooking);
+router.route("/rejectWorkingSpaceShareBooking").put(rejectWorkingShareBooking);
+router
+  .route("/createWorkingSpaceShareBooking/:id")
+  .post(createWorkingSpaceBooking);
 router.route("/getAllWorkingSpaces").post(getAllWorkingSpaceShares);
 
 module.exports = router;

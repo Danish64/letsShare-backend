@@ -196,6 +196,7 @@ exports.acceptResidenceShareBooking = async (req, res) => {
     );
 
     let availedSpaceShareList = await UserAvailedSpaces.find({
+      availerId: req.body.availerId,
       shareId: req.body.shareId,
     });
 
@@ -295,6 +296,7 @@ exports.rejectResidenceShareBooking = async (req, res) => {
     );
 
     let availedSpaceShareList = await UserAvailedSpaces.find({
+      availerId: req.body.availerId,
       shareId: req.body.shareId,
     });
 
@@ -366,7 +368,7 @@ exports.deleteShare = async (req, res) => {
         return res
           .status(200)
           .send({ status: "Error", errorCode: 500, message: err.message });
-      UserAvailedSpaces.deleteOne({ shareId: req.body.id }, function (err) {
+      UserAvailedSpaces.deleteMany({ shareId: req.body.id }, function (err) {
         if (err) return handleError(err);
         return res.status(200).send({
           status: "success",

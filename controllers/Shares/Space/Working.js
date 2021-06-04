@@ -95,286 +95,306 @@ exports.getAllWorkingSpaceShares = async (req, res) => {
   }
 };
 
-//   exports.createResidenceSpaceBooking = async (req, res) => {
-//     console.log("createResidenceSpaceShare Booking Route Called");
+exports.createWorkingSpaceBooking = async (req, res) => {
+  console.log("createWorkingSpaceShare Booking Route Called");
 
-//     try {
-//       let residenceSpaceShare = await ResidenceSpaceShare.findById(req.params.id);
+  try {
+    let workingSpaceShare = await WorkingSpaceShare.findById(req.params.id);
 
-//       if (!residenceSpaceShare.isAvailable) {
-//         return res.status(200).send({
-//           status: "Error",
-//           errorCode: 400,
-//           message: "Share is not available.",
-//         });
-//       }
+    if (!workingSpaceShare.isAvailable) {
+      return res.status(200).send({
+        status: "Error",
+        errorCode: 400,
+        message: "Share is not available.",
+      });
+    }
 
-//       const newBooking = { ...req.body };
+    const newBooking = { ...req.body };
 
-//       const checkBooking = residenceSpaceShare.bookings.filter((booking) => {
-//         return (
-//           booking.availerId.toString().trim() === newBooking.availerId.trim()
-//         );
-//       });
-//       // console.log("check booking array", checkBooking);
-//       if (checkBooking.length > 0) {
-//         return res.status(200).send({
-//           status: "Error",
-//           errorCode: 400,
-//           message: "Booking Exists ! Same user cannot avail the share twice.",
-//         });
-//       }
+    const checkBooking = workingSpaceShare.bookings.filter((booking) => {
+      return (
+        booking.availerId.toString().trim() === newBooking.availerId.trim()
+      );
+    });
+    // console.log("check booking array", checkBooking);
+    if (checkBooking.length > 0) {
+      return res.status(200).send({
+        status: "Error",
+        errorCode: 400,
+        message: "Booking Exists ! Same user cannot avail the share twice.",
+      });
+    }
 
-//       if (residenceSpaceShare.singleShareAbleUnit === "room") {
-//         if (residenceSpaceShare.roomsAvailable < newBooking.availerRooms) {
-//           return res.status(200).send({
-//             status: "Error",
-//             errorCode: 400,
-//             message: `Not enough seats ! Only ${residenceSpaceShare.roomsAvailable} available`,
-//           });
-//         }
-//       } else if (residenceSpaceShare.singleShareAbleUnit === "bed") {
-//         if (residenceSpaceShare.bedsAvailable < newBooking.availerBeds) {
-//           return res.status(200).send({
-//             status: "Error",
-//             errorCode: 400,
-//             message: `Not enough seats ! Only ${residenceSpaceShare.bedsAvailable} available`,
-//           });
-//         }
-//       }
+    if (workingSpaceShare.seatsAvailable < newBooking.availerSeats) {
+      return res.status(200).send({
+        status: "Error",
+        errorCode: 400,
+        message: `Not enough seats ! Only ${workingSpaceShare.seatsAvailable} available`,
+      });
+    }
 
-//       if (residenceSpaceShare.bookings) {
-//         residenceSpaceShare.bookings.unshift(newBooking);
-//       } else {
-//         let bookings = [];
-//         bookings.unshift(newBooking);
-//         residenceSpaceShare.bookings = bookings;
-//       }
+    if (workingSpaceShare.desksAvailable < newBooking.availerDesks) {
+      return res.status(200).send({
+        status: "Error",
+        errorCode: 400,
+        message: `Not enough desks ! Only ${workingSpaceShare.desksAvailable} available`,
+      });
+    }
 
-//       let shareAvailedTemp = _.omit(
-//         JSON.parse(JSON.stringify(residenceSpaceShare)),
-//         ["_id"]
-//       );
-//       const availedResidenceShare = {
-//         ...shareAvailedTemp,
-//         shareId: `${residenceSpaceShare._id}`,
-//         availerId: req.body.availerId,
-//       };
+    if (workingSpaceShare.roomsAvailable < newBooking.availerRooms) {
+      return res.status(200).send({
+        status: "Error",
+        errorCode: 400,
+        message: `Not enough rooms in office ! Only ${workingSpaceShare.roomsAvailable} available`,
+      });
+    }
 
-//       let availResidenceSpaceShare = new UserAvailedSpaces(availedResidenceShare);
+    if (workingSpaceShare.bookings) {
+      workingSpaceShare.bookings.unshift(newBooking);
+    } else {
+      let bookings = [];
+      bookings.unshift(newBooking);
+      workingSpaceShare.bookings = bookings;
+    }
 
-//       sendIndividualNotification(
-//         residenceSpaceShare.sharerId,
-//         `You have a booking for ${residenceSpaceShare.spaceTitle}`,
-//         `${req.body.availerName} has a message: ${req.body.availerMessage}`
-//       );
+    let shareAvailedTemp = _.omit(
+      JSON.parse(JSON.stringify(workingSpaceShare)),
+      ["_id"]
+    );
+    const availedWorkingShare = {
+      ...shareAvailedTemp,
+      shareId: `${workingSpaceShare._id}`,
+      availerId: req.body.availerId,
+    };
 
-//       availResidenceSpaceShare.save();
-//       residenceSpaceShare.save();
+    let availWorkingSpaceShare = new UserAvailedSpaces(availedWorkingShare);
 
-//       return res.status(200).send({
-//         status: "success",
-//         data: residenceSpaceShare.bookings,
-//         message: "New booking created",
-//       });
-//     } catch (err) {
-//       return res
-//         .status(200)
-//         .send({ status: "Error", errorCode: 500, message: err.message });
-//     }
-//   };
+    sendIndividualNotification(
+      workingSpaceShare.sharerId,
+      `You have a booking for ${workingSpaceShare.spaceTitle}`,
+      `${req.body.availerName} has a message: ${req.body.availerMessage}`
+    );
 
-//   exports.acceptResidenceShareBooking = async (req, res) => {
-//     console.log("acceptResidenceSpaceShare Booking Route Called");
-//     let availerName = "";
+    availWorkingSpaceShare.save();
+    workingSpaceShare.save();
 
-//     try {
-//       let residenceSpacesShare = await ResidenceSpaceShare.findById(
-//         req.body.shareId
-//       );
+    return res.status(200).send({
+      status: "success",
+      data: workingSpaceShare.bookings,
+      message: "New booking created",
+    });
+  } catch (err) {
+    return res
+      .status(200)
+      .send({ status: "Error", errorCode: 500, message: err.message });
+  }
+};
 
-//       let availedSpaceShareList = await UserAvailedSpaces.find({
-//         shareId: req.body.shareId,
-//       });
+exports.acceptWorkingShareBooking = async (req, res) => {
+  console.log("acceptWorkingSpaceShare Booking Route Called");
+  let availerName = "";
 
-//       let availedSpaceShare = availedSpaceShareList[0];
+  try {
+    let workingSpacesShare = await WorkingSpaceShare.findById(req.body.shareId);
 
-//       if (!residenceSpacesShare.isAvailable) {
-//         return res.status(200).send({
-//           status: "Error",
-//           errorCode: 400,
-//           message: "Booking capacity is full.",
-//         });
-//       }
+    let availedSpaceShareList = await UserAvailedSpaces.find({
+      shareId: req.body.shareId,
+      availerId: req.body.availerId,
+    });
 
-//       //Changes in share's booking
+    let availedSpaceShare = availedSpaceShareList[0];
 
-//       let bookings = residenceSpacesShare.bookings;
+    if (!workingSpacesShare.isAvailable) {
+      return res.status(200).send({
+        status: "Error",
+        errorCode: 400,
+        message: "Booking capacity is full.",
+      });
+    }
 
-//       for (let booking of bookings) {
-//         if (booking["_id"].toString().trim() === req.body.bookingId.trim()) {
-//           if (booking.isAccepted) {
-//             return res.status(200).send({
-//               status: "Error",
-//               errorCode: 400,
-//               message: "Booking already accepted",
-//             });
-//           }
-//           booking.isAccepted = true;
-//           booking.bookingStatus = "Accepted";
-//           if (booking.availerRooms) {
-//             residenceSpacesShare.roomsAvailable =
-//               residenceSpacesShare.roomsAvailable - booking.availerRooms;
-//           } else if (booking.availerBeds) {
-//             residenceSpacesShare.bedsAvailable =
-//               residenceSpacesShare.bedsAvailable - booking.availerBeds;
-//           } else if (booking.isAvailingWhole) {
-//             residenceSpacesShare.isAvailable = false;
-//           }
+    //Changes in share's booking
 
-//           availerName = booking.availerName;
-//         }
-//       }
+    let bookings = workingSpacesShare.bookings;
 
-//       //changes in userAvailedSpaces booking
+    for (let booking of bookings) {
+      if (booking["_id"].toString().trim() === req.body.bookingId.trim()) {
+        if (booking.isAccepted) {
+          return res.status(200).send({
+            status: "Error",
+            errorCode: 400,
+            message: "Booking already accepted",
+          });
+        }
+        booking.isAccepted = true;
+        booking.bookingStatus = "Accepted";
+        if (booking.availerRooms && booking.availerRooms > 0) {
+          workingSpacesShare.roomsAvailable =
+            workingSpacesShare.roomsAvailable - booking.availerRooms;
+        } else if (booking.availerSeats && booking.availerSeats > 0) {
+          workingSpacesShare.seatsAvailable =
+            workingSpacesShare.seatsAvailable - booking.availerSeats;
+        } else if (booking.availerDesks && booking.availerDesks > 0) {
+          workingSpacesShare.desksAvailable =
+            workingSpacesShare.desksAvailable - booking.availerDesks;
+        }
+        availerName = booking.availerName;
+      }
+    }
 
-//       let availedSpacesBookings = availedSpaceShare.bookings;
+    //changes in userAvailedSpaces booking
 
-//       for (let booking of availedSpacesBookings) {
-//         if (booking["_id"].toString().trim() === req.body.bookingId.trim()) {
-//           booking.isAccepted = true;
-//           booking.bookingStatus = "Accepted";
-//           if (booking.availerRooms) {
-//             availedSpaceShare.roomsAvailable =
-//               availedSpaceShare.roomsAvailable - booking.availerRooms;
-//           } else if (booking.availerBeds) {
-//             availedSpaceShare.bedsAvailable =
-//               availedSpaceShare.bedsAvailable - booking.availerBeds;
-//           } else if (booking.isAvailingWhole) {
-//             availedSpaceShare.isAvailable = false;
-//           }
-//         }
-//       }
+    let availedSpacesBookings = availedSpaceShare.bookings;
 
-//       if (
-//         residenceSpacesShare.roomsAvailable === 0 ||
-//         residenceSpacesShare.bedsAvailable === 0
-//       ) {
-//         residenceSpacesShare.isAvailable = false;
-//       }
-//       availedSpaceShare.save();
-//       residenceSpacesShare.save();
+    for (let booking of availedSpacesBookings) {
+      if (booking["_id"].toString().trim() === req.body.bookingId.trim()) {
+        booking.isAccepted = true;
+        booking.bookingStatus = "Accepted";
+        if (booking.availerRooms && booking.availerRooms > 0) {
+          workingSpacesShare.roomsAvailable =
+            workingSpacesShare.roomsAvailable - booking.availerRooms;
+        } else if (booking.availerSeats && booking.availerSeats > 0) {
+          workingSpacesShare.seatsAvailable =
+            workingSpacesShare.seatsAvailable - booking.availerSeats;
+        } else if (booking.availerDesks && booking.availerDesks > 0) {
+          workingSpacesShare.desksAvailable =
+            workingSpacesShare.desksAvailable - booking.availerDesks;
+        }
+      }
+    }
 
-//       sendIndividualNotification(
-//         req.body.availerId,
-//         `Booking accepted`,
-//         `Hi ${availerName}, Your booking for ${residenceSpacesShare.spaceTitle} is accepted.`
-//       );
+    if (
+      workingSpacesShare.availableSeats +
+        workingSpacesShare.availableRooms +
+        workingSpacesShare.availableDesks ===
+      0
+    ) {
+      workingSpacesShare.isAvailable = false;
+    }
+    availedSpaceShare.save();
+    workingSpacesShare.save();
 
-//       return res.status(200).send({
-//         status: "success",
-//         data: "",
-//         message: `${availerName}'s booking accepted.`,
-//       });
-//     } catch (err) {
-//       return res
-//         .status(200)
-//         .send({ status: "Error", errorCode: 500, message: err.message });
-//     }
-//   };
+    sendIndividualNotification(
+      req.body.availerId,
+      `Booking accepted`,
+      `Hi ${availerName}, Your booking for ${workingSpacesShare.spaceTitle} is accepted.`
+    );
 
-//   exports.rejectResidenceShareBooking = async (req, res) => {
-//     console.log("rejectResidenceSpaceShare Booking Route Called");
-//     let availerName = "";
+    return res.status(200).send({
+      status: "success",
+      data: "",
+      message: `${availerName}'s booking accepted.`,
+    });
+  } catch (err) {
+    return res
+      .status(200)
+      .send({ status: "Error", errorCode: 500, message: err.message });
+  }
+};
 
-//     try {
-//       let residenceSpacesShare = await ResidenceSpaceShare.findById(
-//         req.body.shareId
-//       );
+exports.rejectWorkingShareBooking = async (req, res) => {
+  console.log("rejectWorkingSpaceShare Booking Route Called");
+  let availerName = "";
 
-//       let availedSpaceShareList = await UserAvailedSpaces.find({
-//         shareId: req.body.shareId,
-//       });
+  try {
+    let workingSpacesShare = await WorkingSpaceShare.findById(req.body.shareId);
 
-//       let availedSpaceShare = availedSpaceShareList[0];
+    let availedSpaceShareList = await UserAvailedSpaces.find({
+      shareId: req.body.shareId,
+      availerId: req.body.availerId,
+    });
 
-//       if (!residenceSpacesShare.isAvailable) {
-//         return res.status(200).send({
-//           status: "Error",
-//           errorCode: 400,
-//           message: "Booking capacity is full.",
-//         });
-//       }
+    let availedSpaceShare = availedSpaceShareList[0];
 
-//       //Changes in share's booking
+    if (!workingSpacesShare.isAvailable) {
+      return res.status(200).send({
+        status: "Error",
+        errorCode: 400,
+        message: "Booking capacity is full.",
+      });
+    }
 
-//       let bookings = residenceSpacesShare.bookings;
+    if (!availedSpaceShare) {
+      return res.status(200).send({
+        status: "Error",
+        errorCode: 400,
+        message: "Something is wrong",
+      });
+    }
 
-//       for (let booking of bookings) {
-//         if (booking["_id"].toString().trim() === req.body.bookingId.trim()) {
-//           if (booking.isAccepted) {
-//             return res.status(200).send({
-//               status: "Error",
-//               errorCode: 400,
-//               message: "Booking already accepted",
-//             });
-//           }
-//           booking.isAccepted = false;
-//           booking.bookingStatus = "Rejected";
-//           availerName = booking.availerName;
-//         }
-//       }
+    //Changes in share's booking
 
-//       //changes in userAvailedSpaces booking
+    let bookings = workingSpacesShare.bookings;
 
-//       let availedSpacesBookings = availedSpaceShare.bookings;
+    for (let booking of bookings) {
+      //   console.log("Booking", booking);
+      if (booking["_id"].toString().trim() === req.body.bookingId.trim()) {
+        // console.log("Yo! changing working space booking", booking.availerName);
 
-//       for (let booking of availedSpacesBookings) {
-//         if (booking["_id"].toString().trim() === req.body.bookingId.trim()) {
-//           booking.isAccepted = false;
-//           booking.bookingStatus = "Rejected";
-//         }
-//       }
-//       availedSpaceShare.save();
-//       residenceSpacesShare.save();
+        if (booking.isAccepted) {
+          return res.status(200).send({
+            status: "Error",
+            errorCode: 400,
+            message: "Booking already accepted",
+          });
+        }
+        booking.isAccepted = false;
+        booking.bookingStatus = "Rejected";
+        availerName = booking.availerName;
+      }
+    }
 
-//       sendIndividualNotification(
-//         req.body.availerId,
-//         `Booking rejected`,
-//         `Hi ${availerName}, Your booking for ${residenceSpacesShare.spaceTitle} is rejected.`
-//       );
+    //changes in userAvailedSpaces booking
 
-//       return res.status(200).send({
-//         status: "success",
-//         data: "",
-//         message: `${availerName}'s booking rejected.`,
-//       });
-//     } catch (err) {
-//       return res
-//         .status(200)
-//         .send({ status: "Error", errorCode: 500, message: err.message });
-//     }
-//   };
+    let availedSpacesBookings = availedSpaceShare.bookings;
 
-//   exports.deleteShare = async (req, res) => {
-//     console.log("Delete residence Share route called");
-//     try {
-//       ResidenceSpaceShare.deleteOne({ _id: req.body.id }, function (err) {
-//         if (err)
-//           return res
-//             .status(200)
-//             .send({ status: "Error", errorCode: 500, message: err.message });
-//         UserAvailedSpaces.deleteOne({ shareId: req.body.id }, function (err) {
-//           if (err) return handleError(err);
-//           return res.status(200).send({
-//             status: "success",
-//             message: `Residence Space Share Deleted`,
-//           });
-//         });
-//       });
-//     } catch (err) {
-//       return res
-//         .status(200)
-//         .send({ status: "Error", errorCode: 500, message: err.message });
-//     }
-//   };
+    for (let booking of availedSpacesBookings) {
+      if (booking["_id"].toString().trim() === req.body.bookingId.trim()) {
+        // console.log("Yo! changing availed space booking");
+        booking.isAccepted = false;
+        booking.bookingStatus = "Rejected";
+      }
+    }
+    await availedSpaceShare.save();
+    await workingSpacesShare.save();
+
+    sendIndividualNotification(
+      req.body.availerId,
+      `Booking rejected`,
+      `Hi ${availerName}, Your booking for ${workingSpacesShare.spaceTitle} is rejected.`
+    );
+
+    return res.status(200).send({
+      status: "success",
+      data: "",
+      message: `${availerName}'s booking rejected.`,
+    });
+  } catch (err) {
+    return res
+      .status(200)
+      .send({ status: "Error", errorCode: 500, message: err.message });
+  }
+};
+
+exports.deleteShare = async (req, res) => {
+  console.log("Delete working Share route called");
+
+  try {
+    WorkingSpaceShare.deleteOne({ _id: req.body.id }, function (err) {
+      if (err)
+        return res
+          .status(200)
+          .send({ status: "Error", errorCode: 500, message: err.message });
+      UserAvailedSpaces.deleteMany({ shareId: req.body.id }, function (err) {
+        if (err) return handleError(err);
+        return res.status(200).send({
+          status: "success",
+          message: `Working Space Share Deleted`,
+        });
+      });
+    });
+  } catch (err) {
+    return res
+      .status(200)
+      .send({ status: "Error", errorCode: 500, message: err.message });
+  }
+};
