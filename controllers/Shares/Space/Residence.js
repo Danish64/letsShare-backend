@@ -157,22 +157,33 @@ exports.createResidenceSpaceBooking = async (req, res) => {
       JSON.parse(JSON.stringify(residenceSpaceShare)),
       ["_id"]
     );
-    const availedResidenceShare = {
-      ...shareAvailedTemp,
-      shareId: `${residenceSpaceShare._id}`,
-      availerId: req.body.availerId,
-    };
 
-    let availResidenceSpaceShare = new UserAvailedSpaces(availedResidenceShare);
+    let tempAvailerIds = [req.body.availerId];
+    let availResidenceSpace;
+    availResidenceSpace = await UserAvailedSpaces.findOne({
+      shareId: residenceSpaceShare._id,
+    });
+
+    if (availResidenceSpace) {
+      availResidenceSpace.availerIds.push(req.body.availerId);
+      availResidenceSpace.bookings = residenceSpaceShare.bookings;
+    } else {
+      const availedResidenceShare = {
+        ...shareAvailedTemp,
+        shareId: `${residenceSpaceShare._id}`,
+        availerIds: tempAvailerIds,
+      };
+      availResidenceSpace = new UserAvailedSpaces(availedResidenceShare);
+    }
+
+    availResidenceSpace.save();
+    residenceSpaceShare.save();
 
     sendIndividualNotification(
       residenceSpaceShare.sharerId,
       `You have a booking for ${residenceSpaceShare.spaceTitle}`,
       `${req.body.availerName} has a message: ${req.body.availerMessage}`
     );
-
-    availResidenceSpaceShare.save();
-    residenceSpaceShare.save();
 
     return res.status(200).send({
       status: "success",
@@ -195,12 +206,10 @@ exports.acceptResidenceShareBooking = async (req, res) => {
       req.body.shareId
     );
 
-    let availedSpaceShareList = await UserAvailedSpaces.find({
-      availerId: req.body.availerId,
+    let availedSpaceShare = await UserAvailedSpaces.findOne({
       shareId: req.body.shareId,
+      availerIds: req.body.availerId,
     });
-
-    let availedSpaceShare = availedSpaceShareList[0];
 
     if (!residenceSpacesShare.isAvailable) {
       return res.status(200).send({
@@ -264,6 +273,7 @@ exports.acceptResidenceShareBooking = async (req, res) => {
       residenceSpacesShare.bedsAvailable === 0
     ) {
       residenceSpacesShare.isAvailable = false;
+      availedSpaceShare.isAvailable = false;
     }
     availedSpaceShare.save();
     residenceSpacesShare.save();
@@ -295,18 +305,23 @@ exports.rejectResidenceShareBooking = async (req, res) => {
       req.body.shareId
     );
 
-    let availedSpaceShareList = await UserAvailedSpaces.find({
-      availerId: req.body.availerId,
+    let availedSpaceShare = await UserAvailedSpaces.findOne({
       shareId: req.body.shareId,
+      availerIds: req.body.availerId,
     });
-
-    let availedSpaceShare = availedSpaceShareList[0];
 
     if (!residenceSpacesShare.isAvailable) {
       return res.status(200).send({
         status: "Error",
         errorCode: 400,
         message: "Booking capacity is full.",
+      });
+    }
+    if (!availedSpaceShare) {
+      return res.status(200).send({
+        status: "Error",
+        errorCode: 400,
+        message: "Something is wrong",
       });
     }
 
@@ -368,7 +383,7 @@ exports.deleteShare = async (req, res) => {
         return res
           .status(200)
           .send({ status: "Error", errorCode: 500, message: err.message });
-      UserAvailedSpaces.deleteMany({ shareId: req.body.id }, function (err) {
+      UserAvailedSpaces.deleteOne({ shareId: req.body.id }, function (err) {
         if (err) return handleError(err);
         return res.status(200).send({
           status: "success",
