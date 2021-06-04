@@ -112,6 +112,11 @@ const userAvailedSpacesSchema = new mongoose.Schema({
     default: true,
   },
 
+  seatsAvailable: Number,
+  seatFare: Number,
+  desksAvailable: Number,
+  deskFare: Number,
+
   isCompleted: {
     type: Boolean,
     default: false,
