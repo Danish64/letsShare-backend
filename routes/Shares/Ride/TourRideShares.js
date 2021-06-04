@@ -6,9 +6,11 @@ const {
   getAllTourRideShares,
   getUserTourRideShares,
   acceptTourRideShareBooking,
+  deleteShare,
 } = require("../../../controllers/Shares/Ride/TourRideShares");
 
 router.route("/createTourRideShare").post(createShare);
+router.route("/deleteTourRideShare").delete(deleteShare);
 router.route("/getUserTourRideShares").post(getUserTourRideShares);
 router.route("/acceptTourRideSharesBooking").put(acceptTourRideShareBooking);
 router

@@ -239,3 +239,26 @@ exports.acceptCityToCityBooking = async (req, res) => {
       .send({ status: "Error", errorCode: 500, message: err.message });
   }
 };
+
+exports.deleteShare = async (req, res) => {
+  console.log("Delete City to city Ride Share route called");
+  try {
+    CityToCityRideShare.deleteOne({ _id: req.body.id }, function (err) {
+      if (err)
+        return res
+          .status(200)
+          .send({ status: "Error", errorCode: 500, message: err.message });
+      UserAvailedRides.deleteOne({ shareId: req.body.id }, function (err) {
+        if (err) return handleError(err);
+        return res.status(200).send({
+          status: "success",
+          message: `City to City Share Deleted`,
+        });
+      });
+    });
+  } catch (err) {
+    return res
+      .status(200)
+      .send({ status: "Error", errorCode: 500, message: err.message });
+  }
+};

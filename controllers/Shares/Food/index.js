@@ -262,3 +262,26 @@ exports.getUserAvailedFoods = async (req, res) => {
       .send({ status: "Error", errorCode: 500, message: err.message });
   }
 };
+
+exports.deleteShare = async (req, res) => {
+  console.log("Delete Food Share route called");
+  try {
+    FoodShare.deleteOne({ _id: req.body.id }, function (err) {
+      if (err)
+        return res
+          .status(200)
+          .send({ status: "Error", errorCode: 500, message: err.message });
+      UserAvailedFoods.deleteOne({ shareId: req.body.id }, function (err) {
+        if (err) return handleError(err);
+        return res.status(200).send({
+          status: "success",
+          message: `Food Share Deleted`,
+        });
+      });
+    });
+  } catch (err) {
+    return res
+      .status(200)
+      .send({ status: "Error", errorCode: 500, message: err.message });
+  }
+};

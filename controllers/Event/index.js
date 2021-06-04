@@ -176,3 +176,19 @@ exports.createEventSharings = function (io) {
     }
   };
 };
+
+exports.deleteShare = async (req, res) => {
+  console.log("Delete Event route called");
+  try {
+    Event.deleteOne({ _id: req.body.id }, function (err) {
+      if (err)
+        return res
+          .status(200)
+          .send({ status: "Error", errorCode: 500, message: err.message });
+    });
+  } catch (err) {
+    return res
+      .status(200)
+      .send({ status: "Error", errorCode: 500, message: err.message });
+  }
+};

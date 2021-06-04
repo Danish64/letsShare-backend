@@ -306,3 +306,26 @@ module.exports.registerNearByRidesHandlers = (io, socket) => {
   socket.on("nearByRides:newBooking", onNearByRidesCreateBooking);
   socket.on("nearByRides:acceptBooking", onNearByRidesAcceptBooking);
 };
+
+exports.deleteShare = async (req, res) => {
+  console.log("Delete NearByRide Share route called");
+  try {
+    NearByRideShare.deleteOne({ _id: req.body.id }, function (err) {
+      if (err)
+        return res
+          .status(200)
+          .send({ status: "Error", errorCode: 500, message: err.message });
+      UserAvailedRides.deleteOne({ shareId: req.body.id }, function (err) {
+        if (err) return handleError(err);
+        return res.status(200).send({
+          status: "success",
+          message: `NearByRide Share Deleted`,
+        });
+      });
+    });
+  } catch (err) {
+    return res
+      .status(200)
+      .send({ status: "Error", errorCode: 500, message: err.message });
+  }
+};

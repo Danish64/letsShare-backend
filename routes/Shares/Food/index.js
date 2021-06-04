@@ -7,9 +7,12 @@ const {
   createFoodShareBooking,
   acceptFoodShareBooking,
   getUserAvailedFoods,
+  deleteShare,
 } = require("../../../controllers/Shares/Food");
 
 router.route("/createFoodShare").post(createShare);
+router.route("/deleteFoodShare").delete(deleteShare);
+
 router.route("/getUserFoodShares").post(getUserFoodShares);
 router.route("/acceptFoodShareBooking").put(acceptFoodShareBooking);
 router.route("/createFoodShareBooking/:id").post(createFoodShareBooking);

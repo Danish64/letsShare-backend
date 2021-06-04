@@ -6,9 +6,11 @@ const {
   getAllCityToCityRideShares,
   createCityToCityBooking,
   acceptCityToCityBooking,
+  deleteShare,
 } = require("../../../controllers/Shares/Ride/CityToCityShares");
 
 router.route("/createCityToCityRideShare").post(createShare);
+router.route("/deleteCityToCityRideShare").delete(deleteShare);
 router.route("/getUserCityToCityRideShares").post(getUserCityToCityRideShares);
 router.route("/acceptCityToCityRideSharesBooking").put(acceptCityToCityBooking);
 router

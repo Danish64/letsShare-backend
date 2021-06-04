@@ -7,10 +7,12 @@ const {
   createNearByBooking,
   acceptNearByBooking,
   getAllNearByRideShares,
+  deleteShare,
 } = require("../../../controllers/Shares/Ride/NearByRideShares");
 
 module.exports = function (io) {
   router.route("/createNearByRideShare").post(createShare(io));
+  router.route("/deleteNearByRideShare").delete(deleteShare);
   router.route("/getUserNearByRideShares").post(getUserNearByRideShares);
   router.route("/acceptNearByRidesSharesBooking").put(acceptNearByBooking(io));
   router

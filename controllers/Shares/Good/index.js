@@ -266,3 +266,26 @@ exports.getUserAvailedGoods = async (req, res) => {
       .send({ status: "Error", errorCode: 500, message: err.message });
   }
 };
+
+exports.deleteShare = async (req, res) => {
+  console.log("Delete Good Share route called");
+  try {
+    GoodShare.deleteOne({ _id: req.body.id }, function (err) {
+      if (err)
+        return res
+          .status(200)
+          .send({ status: "Error", errorCode: 500, message: err.message });
+      UserAvailedGoods.deleteOne({ shareId: req.body.id }, function (err) {
+        if (err) return handleError(err);
+        return res.status(200).send({
+          status: "success",
+          message: `Good Share Deleted`,
+        });
+      });
+    });
+  } catch (err) {
+    return res
+      .status(200)
+      .send({ status: "Error", errorCode: 500, message: err.message });
+  }
+};
