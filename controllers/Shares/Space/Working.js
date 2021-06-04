@@ -161,22 +161,34 @@ exports.createWorkingSpaceBooking = async (req, res) => {
       JSON.parse(JSON.stringify(workingSpaceShare)),
       ["_id"]
     );
-    const availedWorkingShare = {
-      ...shareAvailedTemp,
-      shareId: `${workingSpaceShare._id}`,
-      availerId: req.body.availerId,
-    };
 
-    let availWorkingSpaceShare = new UserAvailedSpaces(availedWorkingShare);
+    let tempAvailerIds = [req.body.availerId];
+    let availWorkingSpace;
+    availWorkingSpace = await UserAvailedSpaces.findOne({
+      shareId: workingSpaceShare._id,
+    });
+
+    if (availWorkingSpace) {
+      //   console.log("I exist");
+      availWorkingSpace.availerIds.push(req.body.availerId);
+      availWorkingSpace.bookings = workingSpaceShare.bookings;
+    } else {
+      const availedWorkingShare = {
+        ...shareAvailedTemp,
+        shareId: `${workingSpaceShare._id}`,
+        availerIds: tempAvailerIds,
+      };
+      availWorkingSpace = new UserAvailedSpaces(availedWorkingShare);
+    }
+
+    availWorkingSpace.save();
+    workingSpaceShare.save();
 
     sendIndividualNotification(
       workingSpaceShare.sharerId,
       `You have a booking for ${workingSpaceShare.spaceTitle}`,
       `${req.body.availerName} has a message: ${req.body.availerMessage}`
     );
-
-    availWorkingSpaceShare.save();
-    workingSpaceShare.save();
 
     return res.status(200).send({
       status: "success",
@@ -197,12 +209,12 @@ exports.acceptWorkingShareBooking = async (req, res) => {
   try {
     let workingSpacesShare = await WorkingSpaceShare.findById(req.body.shareId);
 
-    let availedSpaceShareList = await UserAvailedSpaces.find({
+    let availedSpaceShare = await UserAvailedSpaces.findOne({
       shareId: req.body.shareId,
-      availerId: req.body.availerId,
+      availerIds: req.body.availerId,
     });
 
-    let availedSpaceShare = availedSpaceShareList[0];
+    // console.log("Here this is me", availedSpaceShare.spaceTitle);
 
     if (!workingSpacesShare.isAvailable) {
       return res.status(200).send({
@@ -250,14 +262,14 @@ exports.acceptWorkingShareBooking = async (req, res) => {
         booking.isAccepted = true;
         booking.bookingStatus = "Accepted";
         if (booking.availerRooms && booking.availerRooms > 0) {
-          workingSpacesShare.roomsAvailable =
-            workingSpacesShare.roomsAvailable - booking.availerRooms;
+          availedSpaceShare.roomsAvailable =
+            availedSpaceShare.roomsAvailable - booking.availerRooms;
         } else if (booking.availerSeats && booking.availerSeats > 0) {
-          workingSpacesShare.seatsAvailable =
-            workingSpacesShare.seatsAvailable - booking.availerSeats;
+          availedSpaceShare.seatsAvailable =
+            availedSpaceShare.seatsAvailable - booking.availerSeats;
         } else if (booking.availerDesks && booking.availerDesks > 0) {
-          workingSpacesShare.desksAvailable =
-            workingSpacesShare.desksAvailable - booking.availerDesks;
+          availedSpaceShare.desksAvailable =
+            availedSpaceShare.desksAvailable - booking.availerDesks;
         }
       }
     }
@@ -269,6 +281,7 @@ exports.acceptWorkingShareBooking = async (req, res) => {
       0
     ) {
       workingSpacesShare.isAvailable = false;
+      availedSpaceShare.isAvailable = false;
     }
     availedSpaceShare.save();
     workingSpacesShare.save();
@@ -298,12 +311,10 @@ exports.rejectWorkingShareBooking = async (req, res) => {
   try {
     let workingSpacesShare = await WorkingSpaceShare.findById(req.body.shareId);
 
-    let availedSpaceShareList = await UserAvailedSpaces.find({
+    let availedSpaceShare = await UserAvailedSpaces.findOne({
       shareId: req.body.shareId,
-      availerId: req.body.availerId,
+      availerIds: req.body.availerId,
     });
-
-    let availedSpaceShare = availedSpaceShareList[0];
 
     if (!workingSpacesShare.isAvailable) {
       return res.status(200).send({
@@ -328,7 +339,7 @@ exports.rejectWorkingShareBooking = async (req, res) => {
     for (let booking of bookings) {
       //   console.log("Booking", booking);
       if (booking["_id"].toString().trim() === req.body.bookingId.trim()) {
-        // console.log("Yo! changing working space booking", booking.availerName);
+        console.log("Yo! changing working space booking", booking.availerName);
 
         if (booking.isAccepted) {
           return res.status(200).send({
@@ -384,7 +395,7 @@ exports.deleteShare = async (req, res) => {
         return res
           .status(200)
           .send({ status: "Error", errorCode: 500, message: err.message });
-      UserAvailedSpaces.deleteMany({ shareId: req.body.id }, function (err) {
+      UserAvailedSpaces.deleteOne({ shareId: req.body.id }, function (err) {
         if (err) return handleError(err);
         return res.status(200).send({
           status: "success",

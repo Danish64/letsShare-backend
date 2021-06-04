@@ -48,8 +48,11 @@ exports.getUserSpaceShares = async (req, res) => {
     let residenceShares = await ResidenceSpaceShare.find({
       sharerId: { $in: [req.body.sharerId] },
     });
+    let workingShares = await WorkingSpaceShare.find({
+      sharerId: { $in: [req.body.sharerId] },
+    });
 
-    let allSpaces = [...residenceShares];
+    let allSpaces = [...residenceShares, ...workingShares];
     if (allSpaces.length > 0)
       return res.status(200).send({
         status: "success",
@@ -73,12 +76,12 @@ exports.getUserAvailedSpaces = async (req, res) => {
   console.log("getUserAvailedSpaces Route Called");
 
   const activeFilter = {
-    availerId: { $in: [req.body.availerId] },
+    availerIds: req.body.availerId,
     isCompleted: false,
   };
   const filter = req.body.active
     ? activeFilter
-    : { availerId: { $in: [req.body.availerId] } };
+    : { availerIds: req.body.availerId };
 
   // console.log("Filter", filter);
 

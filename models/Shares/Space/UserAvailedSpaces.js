@@ -21,6 +21,12 @@ const BookingSchema = new mongoose.Schema({
   availerBeds: {
     type: Number,
   },
+  availerSeats: {
+    type: Number,
+  },
+  availerDesks: {
+    type: Number,
+  },
   isAvailingWhole: {
     type: Boolean,
     default: false,
@@ -47,10 +53,7 @@ const userAvailedSpacesSchema = new mongoose.Schema({
   sharerMessage: {
     type: String,
   },
-  availerId: {
-    type: mongoose.ObjectId,
-    required: true,
-  },
+  availerIds: [String],
   shareId: {
     type: mongoose.ObjectId,
     required: true,
